@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: cflib
+Version: 0.1.8
+Summary: Crazyflie python driver
+Home-page: https://github.com/bitcraze/crazyflie-lib-python
+Author: Bitcraze and contributors
+Author-email: contact@bitcraze.io
+License: GPLv3
+Description: UNKNOWN
+Keywords: driver crazyflie quadcopter
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Topic :: System :: Hardware :: Hardware Drivers
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
