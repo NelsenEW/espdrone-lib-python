@@ -113,16 +113,17 @@ class ParamExample:
 
             # Create a new random value [0.00,1.00] for pid_attitude.pitch_kd
             # and set it
-            pkd = random.random()
+            pkd = 5 #random.random()
             print('')
             print('Write: pid_attitude.pitch_kd={:.2f}'.format(pkd))
-            self._cf.param.add_update_callback(group='pid_attitude',
-                                               name='pitch_kd',
-                                               cb=self._a_pitch_kd_callback)
             # When setting a value the parameter is automatically read back
             # and the registered callbacks will get the updated value
             self._cf.param.set_value('pid_attitude.pitch_kd',
                                      '{:.2f}'.format(pkd))
+            self._cf.param.add_update_callback(group='pid_attitude',
+                                               name='pitch_kd',
+                                               cb=self._a_pitch_kd_callback)
+            
 
     def _a_pitch_kd_callback(self, name, value):
         """Callback for pid_attitude.pitch_kd"""
