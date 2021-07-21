@@ -1,3 +1,4 @@
+LICENSE.txt
 README.md
 setup.cfg
 setup.py
@@ -42,6 +43,7 @@ cflib/positioning/motion_commander.py
 cflib/positioning/position_hl_commander.py
 cflib/utils/__init__.py
 cflib/utils/callbacks.py
+cflib/utils/camera.py
 cflib/utils/multiranger.py
 lpslib/__init__.py
 lpslib/lopoanchor.py
