@@ -50,3 +50,11 @@ class Extpos():
         """
 
         self._cf.loc.send_extpos([x, y, z])
+        
+    def send_extpose(self, x, y, z, qx, qy, qz, qw):
+        """
+        Send the current Crazyflie X, Y, Z position and attitude as a
+        normalized quaternion. This is going to be forwarded to the
+        Crazyflie's position estimator.
+        """
+        self._cf.loc.send_extpose([x, y, z], [qx, qy, qz, qw])

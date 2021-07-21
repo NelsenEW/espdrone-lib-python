@@ -56,9 +56,15 @@ class Localization():
     GENERIC_CH = 1
 
     # Location message types for generig channel
-    RANGE_STREAM_REPORT = 0x00
-    RANGE_STREAM_REPORT_FP16 = 0x01
-    LPS_SHORT_LPP_PACKET = 0x02
+    RANGE_STREAM_REPORT = 0
+    RANGE_STREAM_REPORT_FP16 = 1
+    LPS_SHORT_LPP_PACKET = 2
+    EMERGENCY_STOP = 3
+    EMERGENCY_STOP_WATCHDOG = 4
+    COMM_GNSS_NMEA = 6
+    COMM_GNSS_PROPRIETARY = 7
+    EXT_POSE = 8
+    EXT_POSE_PACKED = 9
 
     def __init__(self, crazyflie=None):
         """
@@ -94,9 +100,14 @@ class Localization():
                 anchor_id, distance = struct.unpack('<Bf', raw_data[:5])
                 decoded_data[anchor_id] = distance
                 raw_data = raw_data[5:]
+        elif pk_type == self.LH_PERSIST_DATA:
+            decoded_data = bool(data[0])
+        elif pk_type == self.LH_ANGLE_STREAM:
+            decoded_data = self._decode_lh_angle(data)
 
         pk = LocalizationPacket(pk_type, data, decoded_data)
         self.receivedLocationPacket.call(pk)
+
 
     def send_extpos(self, pos):
         """
@@ -110,6 +121,22 @@ class Localization():
         pk.data = struct.pack('<fff', pos[0], pos[1], pos[2])
         self._cf.send_packet(pk)
 
+    def send_extpose(self, pos, quat):
+        """
+        Send the current Crazyflie pose (position [x, y, z] and
+        attitude quaternion [qx, qy, qz, qw]). This is going to be forwarded
+        to the Crazyflie's position estimator.
+        """
+
+        pk = CRTPPacket()
+        pk.port = CRTPPort.LOCALIZATION
+        pk.channel = self.GENERIC_CH
+        pk.data = struct.pack('<Bfffffff',
+                              self.EXT_POSE,
+                              pos[0], pos[1], pos[2],
+                              quat[0], quat[1], quat[2], quat[3])
+        self._cf.send_packet(pk)
+
     def send_short_lpp_packet(self, dest_id, data):
         """
         Send ultra-wide-band LPP packet to dest_id
@@ -119,4 +146,26 @@ class Localization():
         pk.port = CRTPPort.LOCALIZATION
         pk.channel = self.GENERIC_CH
         pk.data = struct.pack('<BB', self.LPS_SHORT_LPP_PACKET, dest_id) + data
+        self._cf.send_packet(pk)
+
+    def send_emergency_stop(self):
+        """
+        Send emergency stop
+        """
+
+        pk = CRTPPacket()
+        pk.port = CRTPPort.LOCALIZATION
+        pk.channel = self.GENERIC_CH
+        pk.data = struct.pack('<B', self.EMERGENCY_STOP)
+        self._cf.send_packet(pk)
+
+    def send_emergency_stop_watchdog(self):
+        """
+        Send emergency stop watchdog
+        """
+
+        pk = CRTPPacket()
+        pk.port = CRTPPort.LOCALIZATION
+        pk.channel = self.GENERIC_CH
+        pk.data = struct.pack('<B', self.EMERGENCY_STOP_WATCHDOG)
         self._cf.send_packet(pk)
