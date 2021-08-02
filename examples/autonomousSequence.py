@@ -34,11 +34,11 @@ and how to send setpoints.
 """
 import time
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.log import LogConfig
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.espdrone.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.espdrone.syncLogger import SyncLogger
 
 # URI to the Espdrone to connect to
 uri = 'radio://0/80/2M'
@@ -143,7 +143,7 @@ def run_sequence(sed, sequence):
 
 
 if __name__ == '__main__':
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     with SyncEspdrone(uri, ed=Espdrone(rw_cache='./cache')) as sed:
         reset_estimator(sed)

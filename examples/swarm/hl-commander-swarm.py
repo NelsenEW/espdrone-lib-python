@@ -34,11 +34,11 @@ the Swarm class.
 """
 import time
 
-import espdlib.crtp
-from espdlib.espdrone.log import LogConfig
-from espdlib.espdrone.swarm import CachededFactory
-from espdlib.espdrone.swarm import Swarm
-from espdlib.espdrone.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncLogger import SyncLogger
 
 
 def wait_for_position_estimator(sed):
@@ -137,7 +137,7 @@ uris = {
 }
 
 if __name__ == '__main__':
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     factory = CachededFactory(rw_cache='./cache')
     with Swarm(uris, factory=factory) as swarm:
         swarm.parallel_safe(activate_high_level_commander)

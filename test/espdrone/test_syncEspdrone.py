@@ -27,9 +27,9 @@ import sys
 import unittest
 from test.support.asyncCallbackCaller import AsyncCallbackCaller
 
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.utils.callbacks import Caller
+from edlib.espdrone import Espdrone
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.utils.callbacks import Caller
 
 if sys.version_info < (3, 3):
     from mock import MagicMock

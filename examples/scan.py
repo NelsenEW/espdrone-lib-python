@@ -26,13 +26,13 @@
 """
 Simple example that scans for available Espdrones and lists them.
 """
-import espdlib.crtp
+import edlib.crtp
 
 # Initiate the low level drivers
-espdlib.crtp.init_drivers(enable_debug_driver=False)
+edlib.crtp.init_drivers(enable_debug_driver=False)
 
 print('Scanning interfaces for Espdrones...')
-available = espdlib.crtp.scan_interfaces()
+available = edlib.crtp.scan_interfaces()
 print('Espdrones found:')
 for i in available:
     print(i[0])

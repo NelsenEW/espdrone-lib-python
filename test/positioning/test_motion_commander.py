@@ -25,11 +25,11 @@ import math
 import sys
 import unittest
 
-from espdlib.espdrone import Commander
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone import Param
-from espdlib.positioning.motion_commander import _SetPointThread
-from espdlib.positioning.motion_commander import MotionCommander
+from edlib.espdrone import Commander
+from edlib.espdrone import Espdrone
+from edlib.espdrone import Param
+from edlib.positioning.motion_commander import _SetPointThread
+from edlib.positioning.motion_commander import MotionCommander
 
 if sys.version_info < (3, 3):
     from mock import MagicMock, patch, call
@@ -38,7 +38,7 @@ else:
 
 
 @patch('time.sleep')
-@patch('espdlib.positioning.motion_commander._SetPointThread',
+@patch('edlib.positioning.motion_commander._SetPointThread',
        return_value=MagicMock(spec=_SetPointThread))
 class TestMotionCommander(unittest.TestCase):
     def setUp(self):

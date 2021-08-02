@@ -37,10 +37,10 @@ For the example to run the following hardware is needed:
 import logging
 import argparse
 
-import espdlib.crtp  # noqa
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.utils.camera import Camera
+import edlib.crtp  # noqa
+from edlib.espdrone import Espdrone
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.utils.camera import Camera
 import cv2
 
 
@@ -50,7 +50,7 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     parser = argparse.ArgumentParser()
     parser.add_argument("--uri", help='The ip address of the drone, e.g. "192.168.0.102"')
     args = parser.parse_args()
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     else:
         uri = '192.168.43.42'
 
-    ed = Espdrone()
+    ed = Espdrone(rw_cache='./cache')
     with SyncEspdrone(uri, ed=ed) as sed:
         with Camera(sed) as camera:
             while True:

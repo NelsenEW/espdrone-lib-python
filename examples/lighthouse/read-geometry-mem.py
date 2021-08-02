@@ -28,10 +28,10 @@ Espdrone
 import logging
 import time
 
-import espdlib.crtp  # noqa
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.mem import MemoryElement
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
+import edlib.crtp  # noqa
+from edlib.espdrone import Espdrone
+from edlib.espdrone.mem import MemoryElement
+from edlib.espdrone.syncEspdrone import SyncEspdrone
 # Only output errors from the logging framework
 
 logging.basicConfig(level=logging.ERROR)
@@ -64,6 +64,6 @@ if __name__ == '__main__':
     uri = 'radio://0/80/2M'
 
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     ReadMem(uri)

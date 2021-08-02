@@ -49,11 +49,11 @@ y0  7               1
 """
 import time
 
-import espdlib.crtp
-from espdlib.espdrone.log import LogConfig
-from espdlib.espdrone.swarm import CachededFactory
-from espdlib.espdrone.swarm import Swarm
-from espdlib.espdrone.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncLogger import SyncLogger
 
 # Change uris and sequences according to your setup
 URI1 = 'radio://0/70/2M/E7E7E7E701'
@@ -276,7 +276,7 @@ def run_sequence(sed, sequence):
 
 if __name__ == '__main__':
     # logging.basicConfig(level=logging.DEBUG)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     factory = CachededFactory(rw_cache='./cache')
     with Swarm(uris, factory=factory) as swarm:

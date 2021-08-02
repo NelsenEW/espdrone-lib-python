@@ -32,9 +32,9 @@ import logging
 import time
 from threading import Timer
 import argparse
-import espdlib.crtp  # noqa
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.log import LogConfig
+import edlib.crtp  # noqa
+from edlib.espdrone import Espdrone
+from edlib.espdrone.log import LogConfig
 
 # Only output errors from the logging framework
 logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -125,7 +125,7 @@ class LoggingExample:
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     parser = argparse.ArgumentParser()
     parser.add_argument("--uri",  nargs='+', help='The ip address of the drone, e.g. "192.168.0.102"', required=True)
     args = parser.parse_args()

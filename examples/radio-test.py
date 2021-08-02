@@ -16,7 +16,7 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 
-import espdlib.drivers.crazyradio as crazyradio
+import edlib.drivers.crazyradio as crazyradio
 
 radio = crazyradio.Crazyradio()
 

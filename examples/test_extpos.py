@@ -33,11 +33,11 @@ This example utilizes the SyncEspdrone and SyncLogger classes.
 import logging
 import time
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.log import LogConfig
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.espdrone.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.espdrone.syncLogger import SyncLogger
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -45,10 +45,10 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     # Scan for Espdrones and use the first one found
     print('Scanning interfaces for Espdrones...')
-    available = espdlib.crtp.scan_interfaces()
+    available = edlib.crtp.scan_interfaces()
     print('Espdrones found:')
     for i in available:
         print(i[0])

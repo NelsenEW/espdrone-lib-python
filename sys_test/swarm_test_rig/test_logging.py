@@ -23,19 +23,19 @@
 #  MA  02110-1301, USA.
 import unittest
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.log import LogConfig
-from espdlib.espdrone.swarm import CachededFactory
-from espdlib.espdrone.swarm import Swarm
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.espdrone.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.espdrone.syncLogger import SyncLogger
 from sys_test.swarm_test_rig.rig_support import RigSupport
 
 
 class TestLogging(unittest.TestCase):
     def setUp(self):
-        espdlib.crtp.init_drivers(enable_debug_driver=False)
+        edlib.crtp.init_drivers(enable_debug_driver=False)
         self.test_rig_support = RigSupport()
 
     def test_that_requested_logging_is_received_properly_from_one_ed(self):

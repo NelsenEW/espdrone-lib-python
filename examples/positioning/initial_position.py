@@ -38,11 +38,11 @@ initial position of the kalman estimator.
 import math
 import time
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.log import LogConfig
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.espdrone.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.espdrone.syncLogger import SyncLogger
 
 # URI to the Espdrone to connect to
 uri = 'radio://0/80/2M'
@@ -137,7 +137,7 @@ def run_sequence(sed, sequence, base_x, base_y, base_z, yaw):
 
 
 if __name__ == '__main__':
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     # Set these to the position and yaw based on how your Espdrone is placed
     # on the floor

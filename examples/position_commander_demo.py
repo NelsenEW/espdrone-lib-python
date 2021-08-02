@@ -31,10 +31,10 @@ The PositionHlCommander uses position setpoints.
 
 Change the URI variable to your Espdrone configuration.
 """
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.positioning.position_hl_commander import PositionHlCommander
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.positioning.position_hl_commander import PositionHlCommander
 
 # URI to the Espdrone to connect to
 uri = 'radio://0/80/2M/E7E7E7E7E7'
@@ -76,7 +76,7 @@ def simple_sequence():
 
 
 if __name__ == '__main__':
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     simple_sequence()
     # slightly_more_complex_usage()

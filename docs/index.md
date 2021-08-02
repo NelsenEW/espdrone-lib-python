@@ -3,9 +3,9 @@ title: Home
 page_id: home 
 ---
 
-espdlib is an API written in Python that is used to communicate with the Espdrone
+edlib is an API written in Python that is used to communicate with the Espdrone
 and Espdrone 2.0 quadcopters. It is intended to be used by client software to
-communicate with and control a Espdrone quadcopter. For instance the [Espdrone PC client](https://github.com/bitcraze/espdrone-clients-python)  uses the espdlib.
+communicate with and control a Espdrone quadcopter. For instance the [Espdrone PC client](https://github.com/bitcraze/espdrone-clients-python)  uses the edlib.
 
 ## Contribute
 

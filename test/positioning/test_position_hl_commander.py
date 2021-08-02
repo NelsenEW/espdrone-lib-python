@@ -25,10 +25,10 @@ import math
 import sys
 import unittest
 
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone import HighLevelCommander
-from espdlib.espdrone import Param
-from espdlib.positioning.position_hl_commander import PositionHlCommander
+from edlib.espdrone import Espdrone
+from edlib.espdrone import HighLevelCommander
+from edlib.espdrone import Param
+from edlib.positioning.position_hl_commander import PositionHlCommander
 
 if sys.version_info < (3, 3):
     from mock import MagicMock, patch, call

@@ -24,9 +24,9 @@
 import time
 import unittest
 
-import espdlib.crtp
-from espdlib.crtp.crtpstack import CRTPPacket
-from espdlib.crtp.crtpstack import CRTPPort
+import edlib.crtp
+from edlib.crtp.crtpstack import CRTPPacket
+from edlib.crtp.crtpstack import CRTPPort
 from sys_test.swarm_test_rig.rig_support import RigSupport
 
 
@@ -34,7 +34,7 @@ class TestResponseTime(unittest.TestCase):
     ECHO = 0
 
     def setUp(self):
-        espdlib.crtp.init_drivers(enable_debug_driver=False)
+        edlib.crtp.init_drivers(enable_debug_driver=False)
         self.test_rig_support = RigSupport()
 
         self.links = []
@@ -130,7 +130,7 @@ class TestResponseTime(unittest.TestCase):
         return False
 
     def connect_link(self, uri):
-        link = espdlib.crtp.get_link_driver(uri, self._link_quality_cb,
+        link = edlib.crtp.get_link_driver(uri, self._link_quality_cb,
                                           self._link_error_cb)
         self.assertIsNotNone(link)
         self.links.append(link)

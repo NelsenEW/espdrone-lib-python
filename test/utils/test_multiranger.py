@@ -24,11 +24,11 @@
 import sys
 import unittest
 
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone import Log
-from espdlib.espdrone.log import LogConfig
-from espdlib.utils.callbacks import Caller
-from espdlib.utils.multiranger import Multiranger
+from edlib.espdrone import Espdrone
+from edlib.espdrone import Log
+from edlib.espdrone.log import LogConfig
+from edlib.utils.callbacks import Caller
+from edlib.utils.multiranger import Multiranger
 
 if sys.version_info < (3, 3):
     from mock import MagicMock, call, patch
@@ -72,7 +72,7 @@ class MultirangerTest(unittest.TestCase):
 
     def test_that_log_configuration_is_added_on_connect(self):
         # Fixture
-        with patch('espdlib.utils.multiranger.LogConfig',
+        with patch('edlib.utils.multiranger.LogConfig',
                    return_value=self.log_config_mock):
             sut = Multiranger(self.ed_mock)
 
@@ -85,7 +85,7 @@ class MultirangerTest(unittest.TestCase):
 
     def test_that_log_configuration_is_correct(self):
         # Fixture
-        with patch('espdlib.utils.multiranger.LogConfig',
+        with patch('edlib.utils.multiranger.LogConfig',
                    return_value=self.log_config_mock):
             sut = Multiranger(self.ed_mock)
 
@@ -103,7 +103,7 @@ class MultirangerTest(unittest.TestCase):
 
     def test_that_log_configuration_is_correct_with_zranger(self):
         # Fixture
-        with patch('espdlib.utils.multiranger.LogConfig',
+        with patch('edlib.utils.multiranger.LogConfig',
                    return_value=self.log_config_mock):
             sut = Multiranger(self.ed_mock, zranger=True)
 
@@ -122,7 +122,7 @@ class MultirangerTest(unittest.TestCase):
 
     # def test_that_rate_configuration_is_applied(self):
     #     # Fixture
-    #     with patch('espdlib.utils.multiranger.LogConfig',
+    #     with patch('edlib.utils.multiranger.LogConfig',
     #                return_value=self.log_config_mock):
     #
     #         # Test
@@ -133,7 +133,7 @@ class MultirangerTest(unittest.TestCase):
 
     def test_that_logging_is_started_on_start(self):
         # Fixture
-        with patch('espdlib.utils.multiranger.LogConfig',
+        with patch('edlib.utils.multiranger.LogConfig',
                    return_value=self.log_config_mock):
             sut = Multiranger(self.ed_mock)
 
@@ -145,7 +145,7 @@ class MultirangerTest(unittest.TestCase):
 
     def test_that_data_callback_is_set(self):
         # Fixture
-        with patch('espdlib.utils.multiranger.LogConfig',
+        with patch('edlib.utils.multiranger.LogConfig',
                    return_value=self.log_config_mock):
             sut = Multiranger(self.ed_mock)
 
@@ -159,7 +159,7 @@ class MultirangerTest(unittest.TestCase):
 
     def test_that_the_log_config_is_deleted_on_stop(self):
         # Fixture
-        with patch('espdlib.utils.multiranger.LogConfig',
+        with patch('edlib.utils.multiranger.LogConfig',
                    return_value=self.log_config_mock):
             sut = Multiranger(self.ed_mock)
             sut.start()
@@ -172,7 +172,7 @@ class MultirangerTest(unittest.TestCase):
 
     def test_that_using_context_manager_calls_start_and_stop(self):
         # Fixture
-        with patch('espdlib.utils.multiranger.LogConfig',
+        with patch('edlib.utils.multiranger.LogConfig',
                    return_value=self.log_config_mock):
 
             with Multiranger(self.ed_mock):
@@ -245,7 +245,7 @@ class MultirangerTest(unittest.TestCase):
     def _validate_distance_from_getter(self, expected, getter_name,
                                        zranger=False):
         # Fixture
-        with patch('espdlib.utils.multiranger.LogConfig',
+        with patch('edlib.utils.multiranger.LogConfig',
                    return_value=self.log_config_mock):
             sut = Multiranger(self.ed_mock, zranger=zranger)
 

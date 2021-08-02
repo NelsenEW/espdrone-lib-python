@@ -25,7 +25,7 @@
 #  MA  02110-1301, USA.
 import unittest
 
-from espdlib.utils.callbacks import Caller
+from edlib.utils.callbacks import Caller
 
 
 class CallerTest(unittest.TestCase):

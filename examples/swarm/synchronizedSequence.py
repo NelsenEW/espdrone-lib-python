@@ -39,11 +39,11 @@ import time
 from collections import namedtuple
 from queue import Queue
 
-import espdlib.crtp
-from espdlib.espdrone.log import LogConfig
-from espdlib.espdrone.swarm import CachededFactory
-from espdlib.espdrone.swarm import Swarm
-from espdlib.espdrone.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncLogger import SyncLogger
 
 # Time for one step in second
 STEP_TIME = 1
@@ -235,7 +235,7 @@ def control_thread():
 if __name__ == '__main__':
     controlQueues = [Queue() for _ in range(len(uris))]
 
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     factory = CachededFactory(rw_cache='./cache')
     with Swarm(uris, factory=factory) as swarm:
         swarm.parallel_safe(activate_high_level_commander)

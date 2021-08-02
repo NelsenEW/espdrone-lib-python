@@ -24,8 +24,8 @@
 import sys
 import unittest
 
-from espdlib.espdrone.swarm import Swarm
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncEspdrone import SyncEspdrone
 
 if sys.version_info < (3, 3):
     from mock import MagicMock

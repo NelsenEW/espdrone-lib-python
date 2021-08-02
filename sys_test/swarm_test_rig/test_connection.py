@@ -24,17 +24,17 @@
 import time
 import unittest
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.swarm import CachededFactory
-from espdlib.espdrone.swarm import Swarm
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncEspdrone import SyncEspdrone
 from sys_test.swarm_test_rig.rig_support import RigSupport
 
 
 class TestConnection(unittest.TestCase):
     def setUp(self):
-        espdlib.crtp.init_drivers(enable_debug_driver=False)
+        edlib.crtp.init_drivers(enable_debug_driver=False)
         self.test_rig_support = RigSupport()
 
     def test_that_connection_time_scales_with_more_devices_without_cache(self):

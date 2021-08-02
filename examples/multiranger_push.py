@@ -45,11 +45,11 @@ import logging
 import sys
 import time
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.positioning.motion_commander import MotionCommander
-from espdlib.utils.multiranger import Multiranger
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.positioning.motion_commander import MotionCommander
+from edlib.utils.multiranger import Multiranger
 
 URI = 'radio://0/80/2M'
 
@@ -71,7 +71,7 @@ def is_close(range):
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     ed = Espdrone(rw_cache='./cache')
     with SyncEspdrone(URI, ed=ed) as sed:

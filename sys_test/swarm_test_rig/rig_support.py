@@ -23,8 +23,8 @@
 #  MA  02110-1301, USA.
 import time
 
-from espdlib.crtp import RadioDriver
-from espdlib.drivers.crazyradio import Crazyradio
+from edlib.crtp import RadioDriver
+from edlib.drivers.crazyradio import Crazyradio
 
 
 class RigSupport:

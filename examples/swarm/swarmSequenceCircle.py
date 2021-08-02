@@ -41,9 +41,9 @@ The distance from the center to the perimeter of the circle is around 0.5 m
 import math
 import time
 
-import espdlib.crtp
-from espdlib.espdrone.swarm import CachededFactory
-from espdlib.espdrone.swarm import Swarm
+import edlib.crtp
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
 
 # Change uris according to your setup
 URI0 = 'radio://0/70/2M/E7E7E7E7E7'
@@ -142,7 +142,7 @@ def run_sequence(sed, params):
 
 
 if __name__ == '__main__':
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     factory = CachededFactory(rw_cache='./cache')
     with Swarm(uris, factory=factory) as swarm:

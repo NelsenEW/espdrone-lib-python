@@ -25,7 +25,7 @@
 #  MA  02110-1301, USA.
 import unittest
 
-from espdlib.crtp.crtpstack import CRTPPacket
+from edlib.crtp.crtpstack import CRTPPacket
 
 
 class CRTPPacketTest(unittest.TestCase):

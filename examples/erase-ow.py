@@ -31,9 +31,9 @@ import logging
 import sys
 import time
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.mem import MemoryElement
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.mem import MemoryElement
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.INFO)
@@ -125,10 +125,10 @@ if __name__ == '__main__':
           ' firmware (flashed on production units). See https://github.com'
           '/bitcraze/espdrone-clients-python/issues/166')
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     # Scan for Espdrones and use the first one found
     print('Scanning interfaces for Espdrones...')
-    available = espdlib.crtp.scan_interfaces()
+    available = edlib.crtp.scan_interfaces()
     print('Espdrones found:')
     for i in available:
         print(i[0])

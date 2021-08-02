@@ -32,13 +32,13 @@ and how to send setpoints using the high level commander.
 """
 import time
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.log import LogConfig
-from espdlib.espdrone.mem import MemoryElement
-from espdlib.espdrone.mem import Poly4D
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.espdrone.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.mem import MemoryElement
+from edlib.espdrone.mem import Poly4D
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.espdrone.syncLogger import SyncLogger
 
 # URI to the Espdrone to connect to
 uri = 'udp://192.168.4.1'
@@ -167,7 +167,7 @@ def run_sequence(ed, trajectory_id, duration):
     commander.stop()
 
 if __name__ == '__main__':
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     ed=Espdrone(uri)
     trajectory_id = 1
 

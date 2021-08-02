@@ -58,9 +58,9 @@ from vispy import scene
 from vispy.scene import visuals
 from vispy.scene.cameras import TurntableCamera
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.log import LogConfig
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.log import LogConfig
 
 try:
     from sip import setapi
@@ -102,7 +102,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.canvas.native)
 
-        espdlib.crtp.init_drivers(enable_debug_driver=False)
+        edlib.crtp.init_drivers(enable_debug_driver=False)
         self.ed = Espdrone(ro_cache=None, rw_cache='cache')
 
         # Connect callbacks from the Espdrone API

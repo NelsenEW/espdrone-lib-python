@@ -31,8 +31,8 @@ import logging
 import time
 from threading import Thread
 
-import espdlib
-from espdlib.espdrone import Espdrone
+import edlib
+from edlib.espdrone import Espdrone
 
 logging.basicConfig(level=logging.ERROR)
 
@@ -108,7 +108,7 @@ class MotorRampExample:
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     # Connect the two espdrones and ramps them up-down
     me0 = MotorRampExample('192.168.0.112')
     me1 = MotorRampExample('192.168.0.111')

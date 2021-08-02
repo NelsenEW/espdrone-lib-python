@@ -32,8 +32,8 @@ import logging
 import random
 import time
 import argparse
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
+import edlib.crtp
+from edlib.espdrone import Espdrone
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -151,7 +151,7 @@ class ParamExample:
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
     parser = argparse.ArgumentParser()  
     parser.add_argument("--uri", help='The ip address of the drone, e.g. "192.168.0.102"')
     args = parser.parse_args()

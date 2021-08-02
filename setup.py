@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 setup(
-    name='espdlib',
+    name='edlib',
     version='0.1.8',
     packages=find_packages(exclude=['examples', 'tests']),
 

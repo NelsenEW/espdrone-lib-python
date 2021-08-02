@@ -23,9 +23,9 @@ import os
 import sys
 import time
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.mem import MemoryElement
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.mem import MemoryElement
 
 
 class NotConnected(RuntimeError):
@@ -135,11 +135,11 @@ def scan():
     """
 
     # Initiate the low level drivers
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     # Scan for Espdrones
     print('Scanning interfaces for Espdrones...')
-    available = espdlib.crtp.scan_interfaces()
+    available = edlib.crtp.scan_interfaces()
     interfaces = [uri for uri, _ in available]
 
     if not interfaces:

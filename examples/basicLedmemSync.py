@@ -33,10 +33,10 @@ Change the URI variable to your Espdrone configuration.
 import logging
 import time
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.mem import MemoryElement
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.mem import MemoryElement
+from edlib.espdrone.syncEspdrone import SyncEspdrone
 
 URI = 'radio://0/80/250K'
 
@@ -46,7 +46,7 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     with SyncEspdrone(URI, ed=Espdrone(rw_cache='./cache')) as sed:
         ed = sed.ed

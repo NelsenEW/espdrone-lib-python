@@ -201,8 +201,8 @@ connect to. This is done by queuing the library that will scan all the
 available interfaces (currently the debug and radio interface).
 
 ``` {.python}
-    espdlib.crtp.init_drivers()
-    available = espdlib.crtp.scan_interfaces()
+    edlib.crtp.init_drivers()
+    available = edlib.crtp.scan_interfaces()
     for i in available:
         print "Interface with URI [%s] found and name/comment [%s]" % (i[0], i[1])
 ```

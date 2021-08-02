@@ -36,10 +36,10 @@ import time
 
 import matplotlib.pyplot as plt
 
-import espdlib.crtp
-from espdlib.espdrone import Espdrone
-from espdlib.espdrone.syncEspdrone import SyncEspdrone
-from espdlib.positioning.position_hl_commander import PositionHlCommander
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.positioning.position_hl_commander import PositionHlCommander
 
 # URI to the Espdrone to connect to
 uri = 'radio://0/80'
@@ -106,7 +106,7 @@ def matrix_print(ed, pc, image_def):
 
 
 if __name__ == '__main__':
-    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     image_def = ImageDef('monalisa.png')
 
