@@ -30,6 +30,7 @@ import re
 import struct
 import sys
 import binascii
+import ipaddress
 from socket import *
 
 from .crtpdriver import CRTPDriver
@@ -58,13 +59,23 @@ class UdpDriver(CRTPDriver):
 
     def connect(self, uri, linkQualityCallback, linkErrorCallback):
         # check if the URI is a radio URI
-        if not re.search('^udp://', uri):
-            raise WrongUriType('Not an UDP URI')
-
+        try:
+            ipaddress.ip_address(uri)
+        except ValueError:
+            raise WrongUriType('Not an IP URI')
+        
         self.queue = queue.Queue()
         self.socket = socket(AF_INET, SOCK_DGRAM)
-        self.addr = ('192.168.43.42', 2390) #7777 modify @libo
-        self.socket.bind(('', 2399))
+        self.addr = (uri, 2390)
+        self.connected = False
+        i = 0
+        while not self.connected:
+            try:
+                self.socket.bind(('', 2390 + i))
+                self.connected = True
+            except OSError:
+                i += 1
+    
         self.socket.connect(self.addr)
         str1=b'\xFF\x01\x01\x01'
         # Add this to the server clients list
@@ -123,5 +134,4 @@ class UdpDriver(CRTPDriver):
         return 'udp'
 
     def scan_interface(self, address):
-        address1 = 'udp://192.168.43.42'
-        return [[address1,""]]
+        return [[]]

@@ -24,7 +24,7 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects 2 Crazyflies, ramp up-down the motors and
+Simple example that connects 2 Espdrones, ramp up-down the motors and
 disconnects.
 """
 import logging
@@ -109,8 +109,8 @@ class MotorRampExample:
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
     cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Connect the two Crazyflies and ramps them up-down
-    le0 = MotorRampExample('radio://0/70/2M')
-    le1 = MotorRampExample('radio://1/80/250K')
-    while(le0.connected or le1.connected):
+    # Connect the two espdrones and ramps them up-down
+    me0 = MotorRampExample('192.168.0.112')
+    me1 = MotorRampExample('192.168.0.111')
+    while(me0.connected or me1.connected):
         time.sleep(0.1)

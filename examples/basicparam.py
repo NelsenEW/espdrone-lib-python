@@ -31,7 +31,7 @@ one parameter and reads back it's value. Finally it disconnects.
 import logging
 import random
 import time
-
+import argparse
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 
@@ -152,19 +152,15 @@ class ParamExample:
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
     cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Scan for Crazyflies and use the first one found
-    print('Scanning interfaces for Crazyflies...')
-    available = cflib.crtp.scan_interfaces()
-    print('Crazyflies found:')
-    for i in available:
-        print(i[0])
-
-    if len(available) > 0:
-        pe = ParamExample(available[0][0])
-        # The Crazyflie lib doesn't contain anything to keep the application
-        # alive, so this is where your application should do something. In our
-        # case we are just waiting until we are disconnected.
-        while pe.is_connected:
-            time.sleep(1)
+    parser = argparse.ArgumentParser()  
+    parser.add_argument("--uri", help='The ip address of the drone, e.g. "192.168.0.102"')
+    args = parser.parse_args()
+    if args.uri:
+        pe = ParamExample(args.uri)
     else:
-        print('No Crazyflies found, cannot run example')
+        pe = ParamExample("192.168.43.42")
+    # The Crazyflie lib doesn't contain anything to keep the application
+    # alive, so this is where your application should do something. In our
+    # case we are just waiting until we are disconnected.
+    while pe.is_connected:
+        time.sleep(1)

@@ -7,7 +7,7 @@ setup(
     version='0.1.8',
     packages=find_packages(exclude=['examples', 'tests']),
 
-    description='Crazyflie python driver',
+    description='Espdrone python driver',
     url='https://github.com/bitcraze/crazyflie-lib-python',
 
     author='Bitcraze and contributors',
@@ -22,7 +22,7 @@ setup(
         'Programming Language :: Python :: 3'
     ],
 
-    keywords='driver crazyflie quadcopter',
+    keywords='driver espdrone quadcopter',
 
-    install_requires=['pyusb>=1.0.0b2','pip>=19.3', 'opencv-python<4.3'],
+    install_requires=['pyusb==1.0.0b2','pip==19.3', 'opencv-python<4.3'],
 )

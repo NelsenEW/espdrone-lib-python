@@ -24,8 +24,9 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects to the first Crazyflie found, logs the Stabilizer
-and prints it to the console. After 10s the application disconnects and exits.
+More complex example that connects to multiple espdrone found, logs the Stabilizer
+and prints it to the console. The example assigns the drone connection time in a multiple of 10s.
+Once all the drones have been successfully disconnected, the application disconnects and exits.
 """
 import logging
 import time
@@ -45,7 +46,7 @@ class LoggingExample:
     link uri and disconnects after 10s.
     """
 
-    def __init__(self, link_uri):
+    def __init__(self, link_uri, timer = 10):
         """ Initialize and run the example with the specified link_uri """
 
         self._cf = Crazyflie(rw_cache='./cache')
@@ -55,7 +56,7 @@ class LoggingExample:
         self._cf.disconnected.add_callback(self._disconnected)
         self._cf.connection_failed.add_callback(self._connection_failed)
         self._cf.connection_lost.add_callback(self._connection_lost)
-
+        self.timer = timer
         print('Connecting to %s' % link_uri)
 
         # Try to connect to the Crazyflie
@@ -94,7 +95,7 @@ class LoggingExample:
             print('Could not add Stabilizer log config, bad configuration.')
 
         # Start a timer to disconnect in 10s
-        t = Timer(60, self._cf.close_link)
+        t = Timer(self.timer, self._cf.close_link)
         t.start()
 
     def _stab_log_error(self, logconf, msg):
@@ -126,15 +127,13 @@ if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
     cflib.crtp.init_drivers(enable_debug_driver=False)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--uri", help='The ip address of the drone, e.g. "192.168.0.102"')
+    parser.add_argument("--uri",  nargs='+', help='The ip address of the drone, e.g. "192.168.0.102"', required=True)
     args = parser.parse_args()
-    if args.uri:
-        le = LoggingExample(args.uri)
-    else:
-        le = LoggingExample('192.168.43.42')
-   
+    multiple_le = [LoggingExample(uri, 10 * i) for i, uri in enumerate(args.uri, 1)]
     # The Crazyflie lib doesn't contain anything to keep the application alive,
     # so this is where your application should do something. In our case we
-    # are just waiting until we are disconnected.
-    while le.is_connected:
+    # are just waiting until all of them are disconnected
+    connected = True
+    while connected:
         time.sleep(1)
+        connected = any([le.is_connected for le in multiple_le])
