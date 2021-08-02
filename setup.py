@@ -3,12 +3,12 @@ from setuptools import find_packages
 from setuptools import setup
 
 setup(
-    name='cflib',
+    name='espdlib',
     version='0.1.8',
     packages=find_packages(exclude=['examples', 'tests']),
 
     description='Espdrone python driver',
-    url='https://github.com/bitcraze/crazyflie-lib-python',
+    url='https://github.com/NelsenEW/espdrone-lib-python',
 
     author='Bitcraze and contributors',
     author_email='contact@bitcraze.io',

@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2017-2018 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -24,9 +24,9 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Version of the AutonomousSequence.py example connecting to 10 Crazyflies.
-The Crazyflies go straight up, hover a while and land but the code is fairly
-generic and each Crazyflie has its own sequence of setpoints that it files
+Version of the AutonomousSequence.py example connecting to 10 Espdrones.
+The Espdrones go straight up, hover a while and land but the code is fairly
+generic and each Espdrone has its own sequence of setpoints that it files
 to.
 
 The layout of the positions:
@@ -49,11 +49,11 @@ y0  7               1
 """
 import time
 
-import cflib.crtp
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.swarm import CachedCfFactory
-from cflib.crazyflie.swarm import Swarm
-from cflib.crazyflie.syncLogger import SyncLogger
+import espdlib.crtp
+from espdlib.espdrone.log import LogConfig
+from espdlib.espdrone.swarm import CachededFactory
+from espdlib.espdrone.swarm import Swarm
+from espdlib.espdrone.syncLogger import SyncLogger
 
 # Change uris and sequences according to your setup
 URI1 = 'radio://0/70/2M/E7E7E7E701'
@@ -169,7 +169,7 @@ uris = {
 }
 
 
-def wait_for_position_estimator(scf):
+def wait_for_position_estimator(sed):
     print('Waiting for estimator to find position...')
 
     log_config = LogConfig(name='Kalman Variance', period_in_ms=500)
@@ -183,7 +183,7 @@ def wait_for_position_estimator(scf):
 
     threshold = 0.001
 
-    with SyncLogger(scf, log_config) as logger:
+    with SyncLogger(sed, log_config) as logger:
         for log_entry in logger:
             data = log_entry[1]
 
@@ -210,22 +210,22 @@ def wait_for_position_estimator(scf):
                 break
 
 
-def wait_for_param_download(scf):
-    while not scf.cf.param.is_updated:
+def wait_for_param_download(sed):
+    while not sed.ed.param.is_updated:
         time.sleep(1.0)
-    print('Parameters downloaded for', scf.cf.link_uri)
+    print('Parameters downloaded for', sed.ed.link_uri)
 
 
-def reset_estimator(scf):
-    cf = scf.cf
-    cf.param.set_value('kalman.resetEstimation', '1')
+def reset_estimator(sed):
+    ed = sed.ed
+    ed.param.set_value('kalman.resetEstimation', '1')
     time.sleep(0.1)
-    cf.param.set_value('kalman.resetEstimation', '0')
+    ed.param.set_value('kalman.resetEstimation', '0')
 
-    wait_for_position_estimator(cf)
+    wait_for_position_estimator(ed)
 
 
-def take_off(cf, position):
+def take_off(ed, position):
     take_off_time = 1.0
     sleep_time = 0.1
     steps = int(take_off_time / sleep_time)
@@ -234,11 +234,11 @@ def take_off(cf, position):
     print(vz)
 
     for i in range(steps):
-        cf.commander.send_velocity_world_setpoint(0, 0, vz, 0)
+        ed.commander.send_velocity_world_setpoint(0, 0, vz, 0)
         time.sleep(sleep_time)
 
 
-def land(cf, position):
+def land(ed, position):
     landing_time = 1.0
     sleep_time = 0.1
     steps = int(landing_time / sleep_time)
@@ -247,38 +247,38 @@ def land(cf, position):
     print(vz)
 
     for _ in range(steps):
-        cf.commander.send_velocity_world_setpoint(0, 0, vz, 0)
+        ed.commander.send_velocity_world_setpoint(0, 0, vz, 0)
         time.sleep(sleep_time)
 
-    cf.commander.send_stop_setpoint()
+    ed.commander.send_stop_setpoint()
     # Make sure that the last packet leaves before the link is closed
     # since the message queue is not flushed before closing
     time.sleep(0.1)
 
 
-def run_sequence(scf, sequence):
+def run_sequence(sed, sequence):
     try:
-        cf = scf.cf
+        ed = sed.ed
 
-        take_off(cf, sequence[0])
+        take_off(ed, sequence[0])
         for position in sequence:
             print('Setting position {}'.format(position))
             end_time = time.time() + position[3]
             while time.time() < end_time:
-                cf.commander.send_position_setpoint(position[0],
+                ed.commander.send_position_setpoint(position[0],
                                                     position[1],
                                                     position[2], 0)
                 time.sleep(0.1)
-        land(cf, sequence[-1])
+        land(ed, sequence[-1])
     except Exception as e:
         print(e)
 
 
 if __name__ == '__main__':
     # logging.basicConfig(level=logging.DEBUG)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
 
-    factory = CachedCfFactory(rw_cache='./cache')
+    factory = CachededFactory(rw_cache='./cache')
     with Swarm(uris, factory=factory) as swarm:
         # If the copters are started in their correct positions this is
         # probably not needed. The Kalman filter will have time to converge

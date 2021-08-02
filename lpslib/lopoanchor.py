@@ -39,11 +39,11 @@ class LoPoAnchor():
     MODE_TDOA = 2  # TDoA 2
     MODE_TDOA3 = 3
 
-    def __init__(self, crazyflie):
+    def __init__(self, espdrone):
         """
-        :param crazyflie: A crazyflie object to be used as a bridge to the LoPo
+        :param espdrone: A espdrone object to be used as a bridge to the LoPo
          system."""
-        self.crazyflie = crazyflie
+        self.espdrone = espdrone
 
     def set_position(self, anchor_id, position):
         """
@@ -57,11 +57,11 @@ class LoPoAnchor():
         z = position[2]
         data = struct.pack('<Bfff', LoPoAnchor.LPP_TYPE_POSITION, x, y, z)
 
-        self.crazyflie.loc.send_short_lpp_packet(anchor_id, data)
+        self.espdrone.loc.send_short_lpp_packet(anchor_id, data)
 
     def reboot(self, anchor_id, mode):
         data = struct.pack('<BB', LoPoAnchor.LPP_TYPE_REBOOT, mode)
-        self.crazyflie.loc.send_short_lpp_packet(anchor_id, data)
+        self.espdrone.loc.send_short_lpp_packet(anchor_id, data)
 
     def set_mode(self, anchor_id, mode):
         """
@@ -69,4 +69,4 @@ class LoPoAnchor():
         it will change mode and resets.
         """
         data = struct.pack('<BB', LoPoAnchor.LPP_TYPE_MODE, mode)
-        self.crazyflie.loc.send_short_lpp_packet(anchor_id, data)
+        self.espdrone.loc.send_short_lpp_packet(anchor_id, data)

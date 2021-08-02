@@ -9,7 +9,7 @@
 #
 #  Copyright (C) 2018 Bitcraze AB
 #
-#  Crazyflie Python Library
+#  Espdrone Python Library
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -28,8 +28,8 @@
 Example script that plots the output ranges from the Multiranger and Flow
 deck in a 3D plot.
 
-When the application is started the Crazyflie will hover at 0.3 m. The
-Crazyflie can then be controlled by using keyboard input:
+When the application is started the Espdrone will hover at 0.3 m. The
+Espdrone can then be controlled by using keyboard input:
  * Move by using the arrow keys (left/right/forward/backwards)
  * Adjust the right with w/s (0.1 m for each keypress)
  * Yaw slowly using a/d (CCW/CW)
@@ -37,14 +37,14 @@ Crazyflie can then be controlled by using keyboard input:
 
 There's additional setting for (see constants below):
  * Plotting the downwards sensor
- * Plotting the estimated Crazyflie postition
+ * Plotting the estimated Espdrone postition
  * Max threashold for sensors
- * Speed factor that set's how fast the Crazyflie moves
+ * Speed factor that set's how fast the Espdrone moves
 
 The demo is ended by either closing the graph window.
 
 For the example to run the following hardware is needed:
- * Crazyflie 2.0
+ * Espdrone 2.0
  * Crazyradio PA
  * Flow deck
  * Multiranger deck
@@ -58,9 +58,9 @@ from vispy import scene
 from vispy.scene import visuals
 from vispy.scene.cameras import TurntableCamera
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.log import LogConfig
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.log import LogConfig
 
 try:
     from sip import setapi
@@ -78,8 +78,8 @@ URI = 'radio://0/80/2M'
 if len(sys.argv) > 1:
     URI = sys.argv[1]
 
-# Enable plotting of Crazyflie
-PLOT_CF = False
+# Enable plotting of Espdrone
+PLOT_ed = False
 # Enable plotting of down sensor
 PLOT_SENSOR_DOWN = False
 # Set the sensor threashold (in mm)
@@ -102,15 +102,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setCentralWidget(self.canvas.native)
 
-        cflib.crtp.init_drivers(enable_debug_driver=False)
-        self.cf = Crazyflie(ro_cache=None, rw_cache='cache')
+        espdlib.crtp.init_drivers(enable_debug_driver=False)
+        self.ed = Espdrone(ro_cache=None, rw_cache='cache')
 
-        # Connect callbacks from the Crazyflie API
-        self.cf.connected.add_callback(self.connected)
-        self.cf.disconnected.add_callback(self.disconnected)
+        # Connect callbacks from the Espdrone API
+        self.ed.connected.add_callback(self.connected)
+        self.ed.disconnected.add_callback(self.disconnected)
 
-        # Connect to the Crazyflie
-        self.cf.open_link(URI)
+        # Connect to the Espdrone
+        self.ed.open_link(URI)
 
         self.hover = {'x': 0.0, 'y': 0.0, 'z': 0.0, 'yaw': 0.0, 'height': 0.3}
 
@@ -120,7 +120,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hoverTimer.start()
 
     def sendHoverCommand(self):
-        self.cf.commander.send_hover_setpoint(
+        self.ed.commander.send_hover_setpoint(
             self.hover['x'], self.hover['y'], self.hover['yaw'],
             self.hover['height'])
 
@@ -143,7 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
         lpos.add_variable('stateEstimate.z')
 
         try:
-            self.cf.log.add_config(lpos)
+            self.ed.log.add_config(lpos)
             lpos.data_received_cb.add_callback(self.pos_data)
             lpos.start()
         except KeyError as e:
@@ -164,7 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
         lmeas.add_variable('stabilizer.yaw')
 
         try:
-            self.cf.log.add_config(lmeas)
+            self.ed.log.add_config(lmeas)
             lmeas.data_received_cb.add_callback(self.meas_data)
             lmeas.start()
         except KeyError as e:
@@ -196,8 +196,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.set_measurement(measurement)
 
     def closeEvent(self, event):
-        if (self.cf is not None):
-            self.cf.close_link()
+        if (self.ed is not None):
+            self.ed.close_link()
 
 
 class Canvas(scene.SceneCanvas):
@@ -277,7 +277,7 @@ class Canvas(scene.SceneCanvas):
 
     def set_position(self, pos):
         self.last_pos = pos
-        if (PLOT_CF):
+        if (PLOT_ed):
             self.pos_data = np.append(self.pos_data, [pos], axis=0)
             self.pos_markers.set_data(self.pos_data, face_color='red', size=5)
 

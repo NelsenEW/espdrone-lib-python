@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-Bridge a Crazyflie connected to a Crazyradio to a local MAVLink port
-Requires 'pip install cflib'
+Bridge a Espdrone connected to a Crazyradio to a local MAVLink port
+Requires 'pip install espdlib'
 
 As the ESB protocol works using PTX and PRX (Primary Transmitter/Reciever)
 modes. Thus, data is only recieved as a response to a sent packet.
@@ -9,7 +9,7 @@ So, we need to constantly poll the receivers for bidirectional communication.
 
 @author: Dennis Shtatnov (densht@gmail.com)
 
-Based off example code from crazyflie-lib-python/examples/read-eeprom.py
+Based off example code from espdrone-lib-python/examples/read-eeprom.py
 """
 # import struct
 import logging
@@ -18,10 +18,10 @@ import sys
 import threading
 import time
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crtp.crtpstack import CRTPPacket
-# from cflib.crtp.crtpstack import CRTPPort
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.crtp.crtpstack import CRTPPacket
+# from espdlib.crtp.crtpstack import CRTPPort
 
 CRTP_PORT_MAVLINK = 8
 
@@ -38,19 +38,19 @@ class RadioBridge:
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.bind(('127.0.0.1', 14551))
 
-        # Create a Crazyflie object without specifying any cache dirs
-        self._cf = Crazyflie()
+        # Create a Espdrone object without specifying any cache dirs
+        self._ed = Espdrone()
 
-        # Connect some callbacks from the Crazyflie API
-        self._cf.connected.add_callback(self._connected)
-        self._cf.disconnected.add_callback(self._disconnected)
-        self._cf.connection_failed.add_callback(self._connection_failed)
-        self._cf.connection_lost.add_callback(self._connection_lost)
+        # Connect some callbacks from the Espdrone API
+        self._ed.connected.add_callback(self._connected)
+        self._ed.disconnected.add_callback(self._disconnected)
+        self._ed.connection_failed.add_callback(self._connection_failed)
+        self._ed.connection_lost.add_callback(self._connection_lost)
 
         print('Connecting to %s' % link_uri)
 
-        # Try to connect to the Crazyflie
-        self._cf.open_link(link_uri)
+        # Try to connect to the Espdrone
+        self._ed.open_link(link_uri)
 
         # Variable used to keep main loop occupied until disconnect
         self.is_connected = True
@@ -58,11 +58,11 @@ class RadioBridge:
         threading.Thread(target=self._server).start()
 
     def _connected(self, link_uri):
-        """ This callback is called form the Crazyflie API when a Crazyflie
+        """ This callback is called form the Espdrone API when a Espdrone
         has been connected and the TOCs have been downloaded."""
         print('Connected to %s' % link_uri)
 
-        self._cf.packet_received.add_callback(self._got_packet)
+        self._ed.packet_received.add_callback(self._got_packet)
 
     def _got_packet(self, pk):
         if pk.port == CRTP_PORT_MAVLINK:
@@ -72,7 +72,7 @@ class RadioBridge:
         pk = CRTPPacket()
         pk.port = CRTP_PORT_MAVLINK  # CRTPPort.COMMANDER
         pk.data = data  # struct.pack('<fffH', roll, -pitch, yaw, thrust)
-        self._cf.send_packet(pk)
+        self._ed.send_packet(pk)
 
     def _server(self):
         while True:
@@ -95,36 +95,36 @@ class RadioBridge:
         print('[%d][%s]: %s' % (timestamp, logconf.name, data))
 
     def _connection_failed(self, link_uri, msg):
-        """Callback when connection initial connection fails (i.e no Crazyflie
+        """Callback when connection initial connection fails (i.e no Espdrone
         at the speficied address)"""
         print('Connection to %s failed: %s' % (link_uri, msg))
         self.is_connected = False
 
     def _connection_lost(self, link_uri, msg):
         """Callback when disconnected after a connection has been made (i.e
-        Crazyflie moves out of range)"""
+        Espdrone moves out of range)"""
         print('Connection to %s lost: %s' % (link_uri, msg))
 
     def _disconnected(self, link_uri):
-        """Callback when the Crazyflie is disconnected (called in all cases)"""
+        """Callback when the Espdrone is disconnected (called in all cases)"""
         print('Disconnected from %s' % link_uri)
         self.is_connected = False
 
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.radiodriver.set_retries_before_disconnect(1500)
-    cflib.crtp.radiodriver.set_retries(3)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Scan for Crazyflies and use the first one found
-    print('Scanning interfaces for Crazyflies...')
+    espdlib.crtp.radiodriver.set_retries_before_disconnect(1500)
+    espdlib.crtp.radiodriver.set_retries(3)
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    # Scan for Espdrones and use the first one found
+    print('Scanning interfaces for Espdrones...')
     if len(sys.argv) > 2:
         address = int(sys.argv[2], 16)  # address=0xE7E7E7E7E7
     else:
         address = None
 
-    available = cflib.crtp.scan_interfaces(address)
-    print('Crazyflies found:')
+    available = espdlib.crtp.scan_interfaces(address)
+    print('Espdrones found:')
     for i in available:
         print(i[0])
 
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         link_uri = 'radio://0/' + str(channel) + '/2M'
         le = RadioBridge(link_uri)  # (available[0][0])
 
-    # The Crazyflie lib doesn't contain anything to keep the application alive,
+    # The Espdrone lib doesn't contain anything to keep the application alive,
     # so this is where your application should do something. In our case we
     # are just waiting until we are disconnected.
     try:

@@ -24,9 +24,9 @@
 import time
 import unittest
 
-import cflib.crtp
-from cflib.crtp.crtpstack import CRTPPacket
-from cflib.crtp.crtpstack import CRTPPort
+import espdlib.crtp
+from espdlib.crtp.crtpstack import CRTPPacket
+from espdlib.crtp.crtpstack import CRTPPort
 from sys_test.swarm_test_rig.rig_support import RigSupport
 
 
@@ -34,7 +34,7 @@ class TestResponseTime(unittest.TestCase):
     ECHO = 0
 
     def setUp(self):
-        cflib.crtp.init_drivers(enable_debug_driver=False)
+        espdlib.crtp.init_drivers(enable_debug_driver=False)
         self.test_rig_support = RigSupport()
 
         self.links = []
@@ -44,7 +44,7 @@ class TestResponseTime(unittest.TestCase):
             link.close()
         self.links = []
 
-    def test_response_time_to_one_cf(self):
+    def test_response_time_to_one_ed(self):
         # Fixture
         uri = self.test_rig_support.all_uris[0]
         self.test_rig_support.restart_devices([uri])
@@ -61,7 +61,7 @@ class TestResponseTime(unittest.TestCase):
         # Assert
         self.assertLess(response_time, expected_max_response_time)
 
-    def test_response_time_to_all_cfs(self):
+    def test_response_time_to_all_eds(self):
         # Fixture
         uris = self.test_rig_support.all_uris
         self.test_rig_support.restart_devices(uris)
@@ -130,7 +130,7 @@ class TestResponseTime(unittest.TestCase):
         return False
 
     def connect_link(self, uri):
-        link = cflib.crtp.get_link_driver(uri, self._link_quality_cb,
+        link = espdlib.crtp.get_link_driver(uri, self._link_quality_cb,
                                           self._link_error_cb)
         self.assertIsNotNone(link)
         self.links.append(link)

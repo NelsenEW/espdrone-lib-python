@@ -24,26 +24,26 @@
 """
 This script shows the basic use of the PositionHlCommander class.
 
-Simple example that connects to the crazyflie at `URI` and runs a
+Simple example that connects to the espdrone at `URI` and runs a
 sequence. This script requires some kind of location system.
 
 The PositionHlCommander uses position setpoints.
 
-Change the URI variable to your Crazyflie configuration.
+Change the URI variable to your Espdrone configuration.
 """
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.positioning.position_hl_commander import PositionHlCommander
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.positioning.position_hl_commander import PositionHlCommander
 
-# URI to the Crazyflie to connect to
+# URI to the Espdrone to connect to
 uri = 'radio://0/80/2M/E7E7E7E7E7'
 
 
 def slightly_more_complex_usage():
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
+    with SyncEspdrone(uri, ed=Espdrone(rw_cache='./cache')) as sed:
         with PositionHlCommander(
-                scf,
+                sed,
                 x=0.0, y=0.0, z=0.0,
                 default_velocity=0.3,
                 default_height=0.5,
@@ -67,8 +67,8 @@ def slightly_more_complex_usage():
 
 
 def simple_sequence():
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        with PositionHlCommander(scf) as pc:
+    with SyncEspdrone(uri, ed=Espdrone(rw_cache='./cache')) as sed:
+        with PositionHlCommander(sed) as pc:
             pc.forward(1.0)
             pc.left(1.0)
             pc.back(1.0)
@@ -76,7 +76,7 @@ def simple_sequence():
 
 
 if __name__ == '__main__':
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
 
     simple_sequence()
     # slightly_more_complex_usage()

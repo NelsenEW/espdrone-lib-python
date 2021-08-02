@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2016 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -24,19 +24,20 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects to the first Crazyflie found, logs the Stabilizer
+Simple example that connects to the first Espdrone found, logs the Stabilizer
 and prints it to the console. After 10s the application disconnects and exits.
 
-This example utilizes the SyncCrazyflie and SyncLogger classes.
+This example utilizes the SyncEspdrone and SyncLogger classes.
 """
 import logging
 import time
+import argparse
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.crazyflie.syncLogger import SyncLogger
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.log import LogConfig
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.espdrone.syncLogger import SyncLogger
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -44,33 +45,31 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Scan for Crazyflies and use the first one found
-    print('Scanning interfaces for Crazyflies...')
-    available = cflib.crtp.scan_interfaces()
-    print('Crazyflies found:')
-    for i in available:
-        print(i[0])
-
-    if len(available) == 0:
-        print('No Crazyflies found, cannot run example')
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--uri", help='The ip address of the drone, e.g. "192.168.0.102"')
+    args = parser.parse_args()
+    if args.uri:
+        uri = args.uri
     else:
-        lg_stab = LogConfig(name='Stabilizer', period_in_ms=10)
-        lg_stab.add_variable('stabilizer.roll', 'float')
-        lg_stab.add_variable('stabilizer.pitch', 'float')
-        lg_stab.add_variable('stabilizer.yaw', 'float')
+        uri = '192.168.43.42'
+   
+    lg_stab = LogConfig(name='Stabilizer', period_in_ms=10)
+    lg_stab.add_variable('stabilizer.roll', 'float')
+    lg_stab.add_variable('stabilizer.pitch', 'float')
+    lg_stab.add_variable('stabilizer.yaw', 'float')
 
-        cf = Crazyflie(rw_cache='./cache')
-        with SyncCrazyflie(available[0][0], cf=cf) as scf:
-            with SyncLogger(scf, lg_stab) as logger:
-                endTime = time.time() + 10
+    ed = Espdrone(rw_cache='./cache')
+    with SyncEspdrone(uri, ed=ed) as sed:
+        with SyncLogger(sed, lg_stab) as logger:
+            endTime = time.time() + 10
 
-                for log_entry in logger:
-                    timestamp = log_entry[0]
-                    data = log_entry[1]
-                    logconf_name = log_entry[2]
+            for log_entry in logger:
+                timestamp = log_entry[0]
+                data = log_entry[1]
+                logconf_name = log_entry[2]
 
-                    print('[%d][%s]: %s' % (timestamp, logconf_name, data))
+                print('[%d][%s]: %s' % (timestamp, logconf_name, data))
 
-                    if time.time() > endTime:
-                        break
+                if time.time() > endTime:
+                    break

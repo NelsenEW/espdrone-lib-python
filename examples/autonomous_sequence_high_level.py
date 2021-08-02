@@ -22,26 +22,26 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects to one crazyflie (check the address at the top
-and update it to your crazyflie address) and uses the high level commander
+Simple example that connects to one espdrone (check the address at the top
+and update it to your espdrone address) and uses the high level commander
 to send setpoints and trajectory to fly a figure 8.
 
 This example is intended to work with any positioning system (including LPS).
-It aims at documenting how to set the Crazyflie in position control mode
+It aims at documenting how to set the Espdrone in position control mode
 and how to send setpoints using the high level commander.
 """
 import time
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.mem import MemoryElement
-from cflib.crazyflie.mem import Poly4D
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.crazyflie.syncLogger import SyncLogger
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.log import LogConfig
+from espdlib.espdrone.mem import MemoryElement
+from espdlib.espdrone.mem import Poly4D
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.espdrone.syncLogger import SyncLogger
 
-# URI to the Crazyflie to connect to
-uri = 'udp://192.168.4.1'
+# URI to the Espdrone to connect to
+uri = '192.168.4.1'
 
 # The trajectory to fly
 # See https://github.com/whoenig/uav_trajectories for a tool to generate
@@ -78,7 +78,7 @@ class Uploader:
         self._is_done = True
 
 
-def wait_for_position_estimator(scf):
+def wait_for_position_estimator(sed):
     print('Waiting for estimator to find position...')
 
     log_config = LogConfig(name='Kalman Variance', period_in_ms=500)
@@ -92,7 +92,7 @@ def wait_for_position_estimator(scf):
 
     threshold = 0.001
 
-    with SyncLogger(scf, log_config) as logger:
+    with SyncLogger(sed, log_config) as logger:
         for log_entry in logger:
             data = log_entry[1]
 
@@ -119,24 +119,24 @@ def wait_for_position_estimator(scf):
                 break
 
 
-def reset_estimator(cf):
-    cf.param.set_value('kalman.resetEstimation', '1')
+def reset_estimator(ed):
+    ed.param.set_value('kalman.resetEstimation', '1')
     time.sleep(0.1)
-    cf.param.set_value('kalman.resetEstimation', '0')
+    ed.param.set_value('kalman.resetEstimation', '0')
 
-    wait_for_position_estimator(cf)
-
-
-def activate_high_level_commander(cf):
-    cf.param.set_value('commander.enHighLevel', '1')
+    wait_for_position_estimator(ed)
 
 
-def activate_mellinger_controller(cf):
-    cf.param.set_value('stabilizer.controller', '1')
+def activate_high_level_commander(ed):
+    ed.param.set_value('commander.enHighLevel', '1')
 
 
-def upload_trajectory(cf, trajectory_id, trajectory):
-    trajectory_mem = cf.mem.get_mems(MemoryElement.TYPE_TRAJ)[0]
+def activate_mellinger_controller(ed):
+    ed.param.set_value('stabilizer.controller', '1')
+
+
+def upload_trajectory(ed, trajectory_id, trajectory):
+    trajectory_mem = ed.mem.get_mems(MemoryElement.TYPE_TRAJ)[0]
 
     total_duration = 0
     for row in trajectory:
@@ -149,13 +149,13 @@ def upload_trajectory(cf, trajectory_id, trajectory):
         total_duration += duration
 
     Uploader().upload(trajectory_mem)
-    cf.high_level_commander.define_trajectory(trajectory_id, 0,
+    ed.high_level_commander.define_trajectory(trajectory_id, 0,
                                               len(trajectory_mem.poly4Ds))
     return total_duration
 
 
-def run_sequence(cf, trajectory_id, duration):
-    commander = cf.high_level_commander
+def run_sequence(ed, trajectory_id, duration):
+    commander = ed.high_level_commander
 
     commander.takeoff(1.0, 2.0)
     time.sleep(3.0)
@@ -168,15 +168,15 @@ def run_sequence(cf, trajectory_id, duration):
 
 
 if __name__ == '__main__':
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
 
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        cf = scf.cf
+    with SyncEspdrone(uri, ed=Espdrone(rw_cache='./cache')) as sed:
+        ed = sed.ed
         trajectory_id = 1
 
-        activate_high_level_commander(cf)
-        # activate_mellinger_controller(cf)
-        duration = upload_trajectory(cf, trajectory_id, figure8)
+        activate_high_level_commander(ed)
+        # activate_mellinger_controller(ed)
+        duration = upload_trajectory(ed, trajectory_id, figure8)
         print('The sequence is {:.1f} seconds long'.format(duration))
-        reset_estimator(cf)
-        run_sequence(cf, trajectory_id, duration)
+        reset_estimator(ed)
+        run_sequence(ed, trajectory_id, duration)

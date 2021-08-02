@@ -26,15 +26,15 @@ anchors.
 
 The main purpose of the lib is to manage LPP (Loco Positioning Protocol).
 
-Initially it will use a Crazyflie with a Loco Positioning deck as a bridge to
+Initially it will use a Espdrone with a Loco Positioning deck as a bridge to
 transfer information to LoPo anchors, but may in the future use other means
 of transportation.
 
 Example:
-cf = Crazyflie()
-cf.open_link("radio://0/125")
+ed = Espdrone()
+ed.open_link("radio://0/125")
 
-anchor = LoPoAnchor(cf)
+anchor = LoPoAnchor(ed)
 anchor.set_position(1, (1.23, 4.56, 7.89))
 
 """

@@ -23,49 +23,49 @@
 #  MA  02110-1301, USA.
 import unittest
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.swarm import CachedCfFactory
-from cflib.crazyflie.swarm import Swarm
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.crazyflie.syncLogger import SyncLogger
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.log import LogConfig
+from espdlib.espdrone.swarm import CachededFactory
+from espdlib.espdrone.swarm import Swarm
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.espdrone.syncLogger import SyncLogger
 from sys_test.swarm_test_rig.rig_support import RigSupport
 
 
 class TestLogging(unittest.TestCase):
     def setUp(self):
-        cflib.crtp.init_drivers(enable_debug_driver=False)
+        espdlib.crtp.init_drivers(enable_debug_driver=False)
         self.test_rig_support = RigSupport()
 
-    def test_that_requested_logging_is_received_properly_from_one_cf(self):
+    def test_that_requested_logging_is_received_properly_from_one_ed(self):
         # Fixture
         uri = self.test_rig_support.all_uris[0]
         self.test_rig_support.restart_devices([uri])
-        cf = Crazyflie(rw_cache='./cache')
+        ed = Espdrone(rw_cache='./cache')
 
         # Test and Assert
-        with SyncCrazyflie(uri, cf=cf) as scf:
-            self.assert_add_logging_and_get_non_zero_value(scf)
+        with SyncEspdrone(uri, ed=ed) as sed:
+            self.assert_add_logging_and_get_non_zero_value(sed)
 
-    def test_that_requested_logging_is_received_properly_from_all_cfs(self):
+    def test_that_requested_logging_is_received_properly_from_all_eds(self):
         # Fixture
         uris = self.test_rig_support.all_uris
         self.test_rig_support.restart_devices(uris)
-        factory = CachedCfFactory(rw_cache='./cache')
+        factory = CachededFactory(rw_cache='./cache')
 
         # Test and Assert
         with Swarm(uris, factory=factory) as swarm:
             swarm.parallel_safe(self.assert_add_logging_and_get_non_zero_value)
 
-    def assert_add_logging_and_get_non_zero_value(self, scf):
+    def assert_add_logging_and_get_non_zero_value(self, sed):
         log_name = 'stabilizer.roll'
         expected = 0.0
 
         lg_conf = LogConfig(name='SysTest', period_in_ms=10)
         lg_conf.add_variable(log_name, 'float')
 
-        with SyncLogger(scf, lg_conf) as logger:
+        with SyncLogger(sed, lg_conf) as logger:
             for log_entry in logger:
                 actual = log_entry[1][log_name]
                 break

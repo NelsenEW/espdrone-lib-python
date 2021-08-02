@@ -25,11 +25,11 @@ import math
 import sys
 import unittest
 
-from cflib.crazyflie import Commander
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie import Param
-from cflib.positioning.motion_commander import _SetPointThread
-from cflib.positioning.motion_commander import MotionCommander
+from espdlib.espdrone import Commander
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone import Param
+from espdlib.positioning.motion_commander import _SetPointThread
+from espdlib.positioning.motion_commander import MotionCommander
 
 if sys.version_info < (3, 3):
     from mock import MagicMock, patch, call
@@ -38,18 +38,18 @@ else:
 
 
 @patch('time.sleep')
-@patch('cflib.positioning.motion_commander._SetPointThread',
+@patch('espdlib.positioning.motion_commander._SetPointThread',
        return_value=MagicMock(spec=_SetPointThread))
 class TestMotionCommander(unittest.TestCase):
     def setUp(self):
         self.commander_mock = MagicMock(spec=Commander)
         self.param_mock = MagicMock(spec=Param)
-        self.cf_mock = MagicMock(spec=Crazyflie)
-        self.cf_mock.commander = self.commander_mock
-        self.cf_mock.param = self.param_mock
-        self.cf_mock.is_connected.return_value = True
+        self.ed_mock = MagicMock(spec=Espdrone)
+        self.ed_mock.commander = self.commander_mock
+        self.ed_mock.param = self.param_mock
+        self.ed_mock.is_connected.return_value = True
 
-        self.sut = MotionCommander(self.cf_mock)
+        self.sut = MotionCommander(self.ed_mock)
 
     def test_that_the_estimator_is_reset_on_take_off(
             self, _SetPointThread_mock, sleep_mock):
@@ -67,7 +67,7 @@ class TestMotionCommander(unittest.TestCase):
     def test_that_take_off_raises_exception_if_not_connected(
             self, _SetPointThread_mock, sleep_mock):
         # Fixture
-        self.cf_mock.is_connected.return_value = False
+        self.ed_mock.is_connected.return_value = False
 
         # Test
         # Assert
@@ -103,7 +103,7 @@ class TestMotionCommander(unittest.TestCase):
             self, _SetPointThread_mock, sleep_mock):
         # Fixture
         thread_mock = _SetPointThread_mock()
-        sut = MotionCommander(self.cf_mock, default_height=0.4)
+        sut = MotionCommander(self.ed_mock, default_height=0.4)
 
         # Test
         sut.take_off(velocity=0.6)
@@ -453,10 +453,10 @@ class TestMotionCommander(unittest.TestCase):
 class TestSetpointThread(unittest.TestCase):
     def setUp(self):
         self.commander_mock = MagicMock(spec=Commander)
-        self.cf_mock = MagicMock(spec=Crazyflie)
-        self.cf_mock.commander = self.commander_mock
+        self.ed_mock = MagicMock(spec=Espdrone)
+        self.ed_mock.commander = self.commander_mock
 
-        self.sut = _SetPointThread(self.cf_mock)
+        self.sut = _SetPointThread(self.ed_mock)
 
     def test_that_thread_stops(self):
         # Fixture

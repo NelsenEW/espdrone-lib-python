@@ -39,11 +39,11 @@ import time
 from collections import namedtuple
 from queue import Queue
 
-import cflib.crtp
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.swarm import CachedCfFactory
-from cflib.crazyflie.swarm import Swarm
-from cflib.crazyflie.syncLogger import SyncLogger
+import espdlib.crtp
+from espdlib.espdrone.log import LogConfig
+from espdlib.espdrone.swarm import CachededFactory
+from espdlib.espdrone.swarm import Swarm
+from espdlib.espdrone.syncLogger import SyncLogger
 
 # Time for one step in second
 STEP_TIME = 1
@@ -58,14 +58,14 @@ Ring = namedtuple('Ring', ['r', 'g', 'b', 'intensity', 'time'])
 Quit = namedtuple('Quit', [])
 
 uris = [
-    'radio://0/10/2M/E7E7E7E701',  # cf_id 0, startup position [-0.5, -0.5]
-    'radio://0/10/2M/E7E7E7E702',  # cf_id 1, startup position [ 0, 0]
-    'radio://0/10/2M/E7E7E7E703',  # cf_id 3, startup position [0.5, 0.5]
+    'radio://0/10/2M/E7E7E7E701',  # ed_id 0, startup position [-0.5, -0.5]
+    'radio://0/10/2M/E7E7E7E702',  # ed_id 1, startup position [ 0, 0]
+    'radio://0/10/2M/E7E7E7E703',  # ed_id 3, startup position [0.5, 0.5]
     # Add more URIs if you want more copters in the swarm
 ]
 
 sequence = [
-    # Step, CF_id,  action
+    # Step, ed_id,  action
     (0,    0,      Takeoff(0.5, 2)),
     (0,    2,      Takeoff(0.5, 2)),
 
@@ -102,7 +102,7 @@ sequence = [
 ]
 
 
-def wait_for_position_estimator(scf):
+def wait_for_position_estimator(sed):
     print('Waiting for estimator to find position...')
 
     log_config = LogConfig(name='Kalman Variance', period_in_ms=500)
@@ -116,7 +116,7 @@ def wait_for_position_estimator(scf):
 
     threshold = 0.001
 
-    with SyncLogger(scf, log_config) as logger:
+    with SyncLogger(sed, log_config) as logger:
         for log_entry in logger:
             data = log_entry[1]
 
@@ -143,27 +143,27 @@ def wait_for_position_estimator(scf):
                 break
 
 
-def reset_estimator(scf):
-    cf = scf.cf
-    cf.param.set_value('kalman.resetEstimation', '1')
+def reset_estimator(sed):
+    ed = sed.ed
+    ed.param.set_value('kalman.resetEstimation', '1')
     time.sleep(0.1)
-    cf.param.set_value('kalman.resetEstimation', '0')
-    wait_for_position_estimator(scf)
+    ed.param.set_value('kalman.resetEstimation', '0')
+    wait_for_position_estimator(sed)
 
 
-def activate_high_level_commander(scf):
-    scf.cf.param.set_value('commander.enHighLevel', '1')
+def activate_high_level_commander(sed):
+    sed.ed.param.set_value('commander.enHighLevel', '1')
 
 
-def activate_mellinger_controller(scf, use_mellinger):
+def activate_mellinger_controller(sed, use_mellinger):
     controller = 1
     if use_mellinger:
         controller = 2
-    scf.cf.param.set_value('stabilizer.controller', str(controller))
+    sed.ed.param.set_value('stabilizer.controller', str(controller))
 
 
-def set_ring_color(cf, r, g, b, intensity, time):
-    cf.param.set_value('ring.fadeTime', str(time))
+def set_ring_color(ed, r, g, b, intensity, time):
+    ed.param.set_value('ring.fadeTime', str(time))
 
     r *= intensity
     g *= intensity
@@ -171,20 +171,20 @@ def set_ring_color(cf, r, g, b, intensity, time):
 
     color = (int(r) << 16) | (int(g) << 8) | int(b)
 
-    cf.param.set_value('ring.fadeColor', str(color))
+    ed.param.set_value('ring.fadeColor', str(color))
 
 
-def crazyflie_control(scf):
-    cf = scf.cf
-    control = controlQueues[uris.index(cf.link_uri)]
+def espdrone_control(sed):
+    ed = sed.ed
+    control = controlQueues[uris.index(ed.link_uri)]
 
-    activate_mellinger_controller(scf, True)
+    activate_mellinger_controller(sed, True)
 
-    commander = scf.cf.high_level_commander
+    commander = sed.ed.high_level_commander
 
     # Set fade to color effect and reset to Led-ring OFF
-    set_ring_color(cf, 0, 0, 0, 0, 0)
-    cf.param.set_value('ring.effect', '14')
+    set_ring_color(ed, 0, 0, 0, 0, 0)
+    ed.param.set_value('ring.effect', '14')
 
     while True:
         command = control.get()
@@ -197,12 +197,12 @@ def crazyflie_control(scf):
         elif type(command) is Goto:
             commander.go_to(command.x, command.y, command.z, 0, command.time)
         elif type(command) is Ring:
-            set_ring_color(cf, command.r, command.g, command.b,
+            set_ring_color(ed, command.r, command.g, command.b,
                            command.intensity, command.time)
             pass
         else:
             print('Warning! unknown command {} for uri {}'.format(command,
-                                                                  cf.uri))
+                                                                  ed.uri))
 
 
 def control_thread():
@@ -213,11 +213,11 @@ def control_thread():
     while not stop:
         print('Step {}:'.format(step))
         while sequence[pointer][0] <= step:
-            cf_id = sequence[pointer][1]
+            ed_id = sequence[pointer][1]
             command = sequence[pointer][2]
 
-            print(' - Running: {} on {}'.format(command, cf_id))
-            controlQueues[cf_id].put(command)
+            print(' - Running: {} on {}'.format(command, ed_id))
+            controlQueues[ed_id].put(command)
             pointer += 1
 
             if pointer >= len(sequence):
@@ -235,8 +235,8 @@ def control_thread():
 if __name__ == '__main__':
     controlQueues = [Queue() for _ in range(len(uris))]
 
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    factory = CachedCfFactory(rw_cache='./cache')
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    factory = CachededFactory(rw_cache='./cache')
     with Swarm(uris, factory=factory) as swarm:
         swarm.parallel_safe(activate_high_level_commander)
         swarm.parallel_safe(reset_estimator)
@@ -245,6 +245,6 @@ if __name__ == '__main__':
 
         threading.Thread(target=control_thread).start()
 
-        swarm.parallel_safe(crazyflie_control)
+        swarm.parallel_safe(espdrone_control)
 
         time.sleep(1)

@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2016 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -24,20 +24,20 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects to the first Crazyflie found, logs the Stabilizer
+Simple example that connects to the first Espdrone found, logs the Stabilizer
 and prints it to the console and send external position every 2s.
 After 10s the application disconnects and exits.
 
-This example utilizes the SyncCrazyflie and SyncLogger classes.
+This example utilizes the SyncEspdrone and SyncLogger classes.
 """
 import logging
 import time
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.crazyflie.syncLogger import SyncLogger
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.log import LogConfig
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.espdrone.syncLogger import SyncLogger
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -45,25 +45,25 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Scan for Crazyflies and use the first one found
-    print('Scanning interfaces for Crazyflies...')
-    available = cflib.crtp.scan_interfaces()
-    print('Crazyflies found:')
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    # Scan for Espdrones and use the first one found
+    print('Scanning interfaces for Espdrones...')
+    available = espdlib.crtp.scan_interfaces()
+    print('Espdrones found:')
     for i in available:
         print(i[0])
 
     if len(available) == 0:
-        print('No Crazyflies found, cannot run example')
+        print('No Espdrones found, cannot run example')
     else:
         lg_stab = LogConfig(name='StateEstimate', period_in_ms=10)
         lg_stab.add_variable('stateEstimate.x', 'float')
         lg_stab.add_variable('stateEstimate.y', 'float')
         lg_stab.add_variable('stateEstimate.z', 'float')
 
-        cf = Crazyflie(rw_cache='./cache')
-        with SyncCrazyflie(available[0][0], cf=cf) as scf:
-            with SyncLogger(scf, lg_stab) as logger:
+        ed = Espdrone(rw_cache='./cache')
+        with SyncEspdrone(available[0][0], ed=ed) as sed:
+            with SyncLogger(sed, lg_stab) as logger:
                 endTime = time.time() + 10
                 update_time = current_time = time.time()
 
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
                     if time.time() - update_time > 2:
                         print("Updating state estimate")
-                        scf.cf.extpos.send_extpose(10, 2, 4, 0, 0, 0, 1)
+                        sed.ed.extpos.send_extpose(10, 2, 4, 0, 0, 0, 1)
                         update_time = time.time()
 
                     if time.time() - current_time > 1:

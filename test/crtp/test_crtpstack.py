@@ -8,7 +8,7 @@
 #
 #  Copyright (C) Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@
 #  MA  02110-1301, USA.
 import unittest
 
-from cflib.crtp.crtpstack import CRTPPacket
+from espdlib.crtp.crtpstack import CRTPPacket
 
 
 class CRTPPacketTest(unittest.TestCase):

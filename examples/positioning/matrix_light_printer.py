@@ -25,23 +25,23 @@
 This script implements a simple matrix light printer to be used with a
 camera with open shutter in a dark room.
 
-It requires a Crazyflie capable of controlling its position and with
+It requires a Espdrone capable of controlling its position and with
 a Led ring attached to it. A piece of sicky paper can be attached on
 the led ring to orient the ring light toward the front.
 
-To control it position, Crazyflie requires an absolute positioning
+To control it position, Espdrone requires an absolute positioning
 system such as the Lighthouse.
 """
 import time
 
 import matplotlib.pyplot as plt
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.positioning.position_hl_commander import PositionHlCommander
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.positioning.position_hl_commander import PositionHlCommander
 
-# URI to the Crazyflie to connect to
+# URI to the Espdrone to connect to
 uri = 'radio://0/80'
 
 
@@ -70,16 +70,16 @@ class ImageDef:
 BLACK = [0, 0, 0]
 
 
-def set_led_ring_solid(cf, rgb):
-    cf.param.set_value('ring.effect', 7)
+def set_led_ring_solid(ed, rgb):
+    ed.param.set_value('ring.effect', 7)
     print(rgb[0], rgb[1], rgb[2])
-    cf.param.set_value('ring.solidRed', rgb[0])
-    cf.param.set_value('ring.solidGreen', rgb[1])
-    cf.param.set_value('ring.solidBlue', rgb[2])
+    ed.param.set_value('ring.solidRed', rgb[0])
+    ed.param.set_value('ring.solidGreen', rgb[1])
+    ed.param.set_value('ring.solidBlue', rgb[2])
 
 
-def matrix_print(cf, pc, image_def):
-    set_led_ring_solid(cf, BLACK)
+def matrix_print(ed, pc, image_def):
+    set_led_ring_solid(ed, BLACK)
     time.sleep(3)
 
     for y_index in range(image_def.y_pixels):
@@ -98,18 +98,18 @@ def matrix_print(cf, pc, image_def):
             print(x, y, color)
 
             pc.go_to(0, x, y)
-            set_led_ring_solid(cf, color)
+            set_led_ring_solid(ed, color)
 
-        set_led_ring_solid(cf, BLACK)
+        set_led_ring_solid(ed, BLACK)
 
         print('---')
 
 
 if __name__ == '__main__':
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
 
     image_def = ImageDef('monalisa.png')
 
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        with PositionHlCommander(scf, default_height=0.5) as pc:
-            matrix_print(scf.cf, pc, image_def)
+    with SyncEspdrone(uri, ed=Espdrone(rw_cache='./cache')) as sed:
+        with PositionHlCommander(sed, default_height=0.5) as pc:
+            matrix_print(sed.ed, pc, image_def)

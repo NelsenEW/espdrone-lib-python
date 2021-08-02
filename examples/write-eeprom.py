@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2014 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -24,16 +24,16 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects to the first Crazyflie found, looks for
+Simple example that connects to the first Espdrone found, looks for
 EEPROM memories and writes the default values in it.
 """
 import logging
 import sys
 import time
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.mem import MemoryElement
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.mem import MemoryElement
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -48,29 +48,29 @@ class EEPROMExample:
     def __init__(self, link_uri):
         """ Initialize and run the example with the specified link_uri """
 
-        # Create a Crazyflie object without specifying any cache dirs
-        self._cf = Crazyflie()
+        # Create a Espdrone object without specifying any cache dirs
+        self._ed = Espdrone()
 
-        # Connect some callbacks from the Crazyflie API
-        self._cf.connected.add_callback(self._connected)
-        self._cf.disconnected.add_callback(self._disconnected)
-        self._cf.connection_failed.add_callback(self._connection_failed)
-        self._cf.connection_lost.add_callback(self._connection_lost)
+        # Connect some callbacks from the Espdrone API
+        self._ed.connected.add_callback(self._connected)
+        self._ed.disconnected.add_callback(self._disconnected)
+        self._ed.connection_failed.add_callback(self._connection_failed)
+        self._ed.connection_lost.add_callback(self._connection_lost)
 
         print('Connecting to %s' % link_uri)
 
-        # Try to connect to the Crazyflie
-        self._cf.open_link(link_uri)
+        # Try to connect to the Espdrone
+        self._ed.open_link(link_uri)
 
         # Variable used to keep main loop occupied until disconnect
         self.is_connected = True
 
     def _connected(self, link_uri):
-        """ This callback is called form the Crazyflie API when a Crazyflie
+        """ This callback is called form the Espdrone API when a Espdrone
         has been connected and the TOCs have been downloaded."""
         print('Connected to %s' % link_uri)
 
-        mems = self._cf.mem.get_mems(MemoryElement.TYPE_I2C)
+        mems = self._ed.mem.get_mems(MemoryElement.TYPE_I2C)
         print('Found {} EEPOM(s)'.format(len(mems)))
         if len(mems) > 0:
             print('Writing default configuration to'
@@ -99,7 +99,7 @@ class EEPROMExample:
         for key in mem.elements:
             print('\t\t{}={}'.format(key, mem.elements[key]))
 
-        self._cf.close_link()
+        self._ed.close_link()
 
     def _stab_log_error(self, logconf, msg):
         """Callback from the log API when an error occurs"""
@@ -110,38 +110,38 @@ class EEPROMExample:
         print('[%d][%s]: %s' % (timestamp, logconf.name, data))
 
     def _connection_failed(self, link_uri, msg):
-        """Callback when connection initial connection fails (i.e no Crazyflie
+        """Callback when connection initial connection fails (i.e no Espdrone
         at the speficied address)"""
         print('Connection to %s failed: %s' % (link_uri, msg))
         self.is_connected = False
 
     def _connection_lost(self, link_uri, msg):
         """Callback when disconnected after a connection has been made (i.e
-        Crazyflie moves out of range)"""
+        Espdrone moves out of range)"""
         print('Connection to %s lost: %s' % (link_uri, msg))
 
     def _disconnected(self, link_uri):
-        """Callback when the Crazyflie is disconnected (called in all cases)"""
+        """Callback when the Espdrone is disconnected (called in all cases)"""
         print('Disconnected from %s' % link_uri)
         self.is_connected = False
 
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Scan for Crazyflies and use the first one found
-    print('Scanning interfaces for Crazyflies...')
-    available = cflib.crtp.scan_interfaces()
-    print('Crazyflies found:')
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    # Scan for Espdrones and use the first one found
+    print('Scanning interfaces for Espdrones...')
+    available = espdlib.crtp.scan_interfaces()
+    print('Espdrones found:')
     for i in available:
         print(i[0])
 
     if len(available) > 0:
         le = EEPROMExample(available[0][0])
     else:
-        print('No Crazyflies found, cannot run example')
+        print('No Espdrones found, cannot run example')
 
-    # The Crazyflie lib doesn't contain anything to keep the application alive,
+    # The Espdrone lib doesn't contain anything to keep the application alive,
     # so this is where your application should do something. In our case we
     # are just waiting until we are disconnected.
     try:

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# Demo that makes one Crazyflie take off 30cm above the first controller found
-# Using the controller trigger it is then possible to 'grab' the Crazyflie
+# Demo that makes one Espdrone take off 30cm above the first controller found
+# Using the controller trigger it is then possible to 'grab' the Espdrone
 # and to make it move.
-# If the Crazyflie has a ledring attached, the touchpad of the controller can
+# If the Espdrone has a ledring attached, the touchpad of the controller can
 # be used to change the color of the led-ring LEDs
 import colorsys
 import math
@@ -11,13 +11,13 @@ import time
 
 import openvr
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.crazyflie.syncLogger import SyncLogger
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.log import LogConfig
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.espdrone.syncLogger import SyncLogger
 
-# URI to the Crazyflie to connect to
+# URI to the Espdrone to connect to
 uri = 'radio://0/80/2M'
 
 print('Openning')
@@ -41,7 +41,7 @@ if controllerId is None:
     sys.exit(1)
 
 
-def wait_for_position_estimator(scf):
+def wait_for_position_estimator(sed):
     print('Waiting for estimator to find position...')
 
     log_config = LogConfig(name='Kalman Variance', period_in_ms=500)
@@ -55,7 +55,7 @@ def wait_for_position_estimator(scf):
 
     threshold = 0.001
 
-    with SyncLogger(scf, log_config) as logger:
+    with SyncLogger(sed, log_config) as logger:
         for log_entry in logger:
             data = log_entry[1]
 
@@ -82,13 +82,13 @@ def wait_for_position_estimator(scf):
                 break
 
 
-def reset_estimator(scf):
-    cf = scf.cf
-    cf.param.set_value('kalman.resetEstimation', '1')
+def reset_estimator(sed):
+    ed = sed.ed
+    ed.param.set_value('kalman.resetEstimation', '1')
     time.sleep(0.1)
-    cf.param.set_value('kalman.resetEstimation', '0')
+    ed.param.set_value('kalman.resetEstimation', '0')
 
-    wait_for_position_estimator(cf)
+    wait_for_position_estimator(ed)
 
 
 def position_callback(timestamp, data, logconf):
@@ -98,13 +98,13 @@ def position_callback(timestamp, data, logconf):
     print('pos: ({}, {}, {})'.format(x, y, z))
 
 
-def start_position_printing(scf):
+def start_position_printing(sed):
     log_conf = LogConfig(name='Position', period_in_ms=500)
     log_conf.add_variable('kalman.stateX', 'float')
     log_conf.add_variable('kalman.stateY', 'float')
     log_conf.add_variable('kalman.stateZ', 'float')
 
-    scf.cf.log.add_config(log_conf)
+    sed.ed.log.add_config(log_conf)
     log_conf.data_received_cb.add_callback(position_callback)
     log_conf.start()
 
@@ -117,10 +117,10 @@ def vector_add(v0, v1):
     return [v0[0] + v1[0], v0[1] + v1[1], v0[2] + v1[2]]
 
 
-def run_sequence(scf):
-    cf = scf.cf
+def run_sequence(sed):
+    ed = sed.ed
 
-    cf.param.set_value('ring.effect', '7')
+    ed.param.set_value('ring.effect', '7')
 
     poses = vr.getDeviceToAbsoluteTrackingPose(
         openvr.TrackingUniverseStanding, 0, openvr.k_unMaxTrackedDeviceCount)
@@ -161,11 +161,11 @@ def run_sequence(scf):
 
             print(rgb)
 
-            cf.param.set_value('ring.solidRed',
+            ed.param.set_value('ring.solidRed',
                                '{}'.format(int(rgb[0] * 255)))
-            cf.param.set_value('ring.solidGreen',
+            ed.param.set_value('ring.solidGreen',
                                '{}'.format(int(rgb[1] * 255)))
-            cf.param.set_value('ring.solidBlue',
+            ed.param.set_value('ring.solidBlue',
                                '{}'.format(int(rgb[2] * 255)))
 
         if not grabbed and trigger:
@@ -184,13 +184,13 @@ def run_sequence(scf):
                                   vector_substract(curr, grab_controller_start)
                                   )
 
-        cf.commander.send_position_setpoint(setpoint[0],
+        ed.commander.send_position_setpoint(setpoint[0],
                                             setpoint[1],
                                             setpoint[2],
                                             0)
         time.sleep(0.02)
 
-    cf.commander.send_setpoint
+    ed.commander.send_setpoint
     (0, 0, 0, 0)
     # Make sure that the last packet leaves before the link is closed
     # since the message queue is not flushed before closing
@@ -198,11 +198,11 @@ def run_sequence(scf):
 
 
 if __name__ == '__main__':
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
 
-    with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-        reset_estimator(scf)
-        # start_position_printing(scf)
-        run_sequence(scf)
+    with SyncEspdrone(uri, ed=Espdrone(rw_cache='./cache')) as sed:
+        reset_estimator(sed)
+        # start_position_printing(sed)
+        run_sequence(sed)
 
     openvr.shutdown()

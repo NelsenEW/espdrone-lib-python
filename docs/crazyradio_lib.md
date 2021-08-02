@@ -3,8 +3,8 @@ title: Python Crazyradio Library
 page_id: crazyradio_lib 
 ---
 
-The python crazyradio lib can be found in the Crazyflie python library git repos
-<https://github.com/bitcraze/crazyflie-lib-python/blob/master/cflib/drivers/crazyradio.py>.
+The python crazyradio lib can be found in the Espdrone python library git repos
+<https://github.com/bitcraze/espdrone-lib-python/blob/master/espdlib/drivers/crazyradio.py>.
 It is a single file that implements the low level Crazyradio dongle
 functionalities.
 

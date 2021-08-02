@@ -3,12 +3,12 @@
 # University of Southern California
 # ericyihc@usc.edu
 '''
-    Simple example that connects to the first Crazyflie found, triggers
+    Simple example that connects to the first Espdrone found, triggers
     reading of rssi data and acknowledgement rate for every channel (0 to 125).
-    It finally sets the Crazyflie channel back to default, plots link
+    It finally sets the Espdrone channel back to default, plots link
     quality data, and offers good channel suggestion.
 
-    Better used when the Crazyflie2-nrf-firmware is compiled with bluetooth
+    Better used when the Espdrone2-nrf-firmware is compiled with bluetooth
     disabled.
 '''
 import argparse
@@ -16,7 +16,7 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 
-import cflib.drivers.crazyradio as crazyradio
+import espdlib.drivers.crazyradio as crazyradio
 
 radio = crazyradio.Crazyradio()
 
@@ -26,15 +26,15 @@ parser.add_argument(
     '-try', '--try', dest='TRY', type=int, default=100,
     help='the time to send data for each channel'
 )
-# by default my crazyflie uses channel 80
+# by default my espdrone uses channel 80
 parser.add_argument(
     '-channel', '--channel', dest='channel', type=int,
-    default=80, help='the default channel in crazyflie'
+    default=80, help='the default channel in espdrone'
 )
-# by default my crazyflie uses datarate 2M
+# by default my espdrone uses datarate 2M
 parser.add_argument(
     '-rate', '--rate', dest='rate', type=int, default=2,
-    help='the default datarate in crazyflie'
+    help='the default datarate in espdrone'
 )
 parser.add_argument(
     '-frac', '--fraction',  dest='fraction', type=float,
@@ -58,7 +58,7 @@ radio.set_arc(0)
 
 for channel in range(0, 126, 1):
 
-    # change Crazyflie channel
+    # change Espdrone channel
     for x in range(50):
         radio.send_packet((0xff, 0x03, SET_RADIO_CHANNEL, channel))
 

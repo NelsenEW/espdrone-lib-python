@@ -23,16 +23,16 @@
 #  MA  02110-1301, USA.
 """
 Example of how to write to the Lighthouse base station geometry memory in a
-Crazyflie
+Espdrone
 """
 import logging
 import time
 
-import cflib.crtp  # noqa
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.mem import LighthouseBsGeometry
-from cflib.crazyflie.mem import MemoryElement
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+import espdlib.crtp  # noqa
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.mem import LighthouseBsGeometry
+from espdlib.espdrone.mem import MemoryElement
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
 # Only output errors from the logging framework
 
 logging.basicConfig(level=logging.ERROR)
@@ -42,8 +42,8 @@ class WriteMem:
     def __init__(self, uri, bs1, bs2):
         self.data_written = False
 
-        with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-            mems = scf.cf.mem.get_mems(MemoryElement.TYPE_LH)
+        with SyncEspdrone(uri, ed=Espdrone(rw_cache='./cache')) as sed:
+            mems = sed.ed.mem.get_mems(MemoryElement.TYPE_LH)
 
             count = len(mems)
             if count != 1:
@@ -63,11 +63,11 @@ class WriteMem:
 
 
 if __name__ == '__main__':
-    # URI to the Crazyflie to connect to
+    # URI to the Espdrone to connect to
     uri = 'radio://0/80/2M'
 
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
 
     bs1 = LighthouseBsGeometry()
     bs1.origin = [1.0, 2.0, 3.0]

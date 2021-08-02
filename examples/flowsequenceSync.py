@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2016 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -24,18 +24,18 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects to the crazyflie at `URI` and runs a figure 8
+Simple example that connects to the espdrone at `URI` and runs a figure 8
 sequence. This script requires some kind of location system, it has been
 tested with (and designed for) the flow deck.
 
-Change the URI variable to your Crazyflie configuration.
+Change the URI variable to your Espdrone configuration.
 """
 import logging
 import time
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
 
 URI = 'radio://0/80/250K'
 
@@ -45,38 +45,38 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
 
-    with SyncCrazyflie(URI, cf=Crazyflie(rw_cache='./cache')) as scf:
-        cf = scf.cf
+    with SyncEspdrone(URI, ed=Espdrone(rw_cache='./cache')) as sed:
+        ed = sed.ed
 
-        cf.param.set_value('kalman.resetEstimation', '1')
+        ed.param.set_value('kalman.resetEstimation', '1')
         time.sleep(0.1)
-        cf.param.set_value('kalman.resetEstimation', '0')
+        ed.param.set_value('kalman.resetEstimation', '0')
         time.sleep(2)
 
         for y in range(10):
-            cf.commander.send_hover_setpoint(0, 0, 0, y / 25)
+            ed.commander.send_hover_setpoint(0, 0, 0, y / 25)
             time.sleep(0.1)
 
         for _ in range(20):
-            cf.commander.send_hover_setpoint(0, 0, 0, 0.4)
+            ed.commander.send_hover_setpoint(0, 0, 0, 0.4)
             time.sleep(0.1)
 
         for _ in range(50):
-            cf.commander.send_hover_setpoint(0.5, 0, 36 * 2, 0.4)
+            ed.commander.send_hover_setpoint(0.5, 0, 36 * 2, 0.4)
             time.sleep(0.1)
 
         for _ in range(50):
-            cf.commander.send_hover_setpoint(0.5, 0, -36 * 2, 0.4)
+            ed.commander.send_hover_setpoint(0.5, 0, -36 * 2, 0.4)
             time.sleep(0.1)
 
         for _ in range(20):
-            cf.commander.send_hover_setpoint(0, 0, 0, 0.4)
+            ed.commander.send_hover_setpoint(0, 0, 0, 0.4)
             time.sleep(0.1)
 
         for y in range(10):
-            cf.commander.send_hover_setpoint(0, 0, 0, (10 - y) / 25)
+            ed.commander.send_hover_setpoint(0, 0, 0, (10 - y) / 25)
             time.sleep(0.1)
 
-        cf.commander.send_stop_setpoint()
+        ed.commander.send_stop_setpoint()

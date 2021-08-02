@@ -9,7 +9,7 @@
 #
 #  Copyright (C) 2017 Bitcraze AB
 #
-#  Crazyflie Python Library
+#  Espdrone Python Library
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -35,18 +35,14 @@ For the example to run the following hardware is needed:
  * Camera
 """
 import logging
-import sys
-import time
+import argparse
 
-import cflib.crtp  # noqa
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.utils.camera import Camera
+import espdlib.crtp  # noqa
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.utils.camera import Camera
 import cv2
-URI = 'radio://0/80/2M'
 
-if len(sys.argv) > 1:
-    URI = sys.argv[1]
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -54,25 +50,22 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Scan for Crazyflies and use the first one found
-    print('Scanning interfaces for Crazyflies...')
-    available = cflib.crtp.scan_interfaces()
-    print('Crazyflies found:')
-    for i in available:
-        print(i[0])
-
-    if len(available) > 0:
-        URI = available[0][0]
-        cf = Crazyflie(rw_cache='./cache')
-        with SyncCrazyflie(URI, cf=cf) as scf:
-            with Camera(scf) as camera:
-                while True:
-                    if camera.image is not None:
-                        cv2.imshow('unique_window_identifier',camera.image)
-                        cv2.setWindowTitle("unique_window_identifier", f"fps= {camera.fps}")
-                        if cv2.waitKey(1) == ord('q'):
-                            break
-                cv2.destroyAllWindows()
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--uri", help='The ip address of the drone, e.g. "192.168.0.102"')
+    args = parser.parse_args()
+    if args.uri:
+        uri = args.uri
     else:
-        print('No Crazyflies found, cannot run example')
+        uri = '192.168.43.42'
+
+    ed = Espdrone()
+    with SyncEspdrone(uri, ed=ed) as sed:
+        with Camera(sed) as camera:
+            while True:
+                if camera.image is not None:
+                    cv2.imshow('unique_window_identifier',camera.image)
+                    cv2.setWindowTitle("unique_window_identifier", f"fps= {camera.fps}")
+                    if cv2.waitKey(1) == ord('q'):
+                        break
+            cv2.destroyAllWindows()

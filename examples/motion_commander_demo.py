@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2017 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -26,21 +26,21 @@
 """
 This script shows the basic use of the MotionCommander class.
 
-Simple example that connects to the crazyflie at `URI` and runs a
+Simple example that connects to the espdrone at `URI` and runs a
 sequence. This script requires some kind of location system, it has been
 tested with (and designed for) the flow deck.
 
 The MotionCommander uses velocity setpoints.
 
-Change the URI variable to your Crazyflie configuration.
+Change the URI variable to your Espdrone configuration.
 """
 import logging
 import time
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.positioning.motion_commander import MotionCommander
+import espdlib.crtp
+from espdlib.espdrone import Espdrone
+from espdlib.espdrone.syncEspdrone import SyncEspdrone
+from espdlib.positioning.motion_commander import MotionCommander
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
@@ -48,19 +48,19 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Scan for Crazyflies and use the first one found
-    print('Scanning interfaces for Crazyflies...')
-    available = cflib.crtp.scan_interfaces()
-    print('Crazyflies found:')
+    espdlib.crtp.init_drivers(enable_debug_driver=False)
+    # Scan for Espdrones and use the first one found
+    print('Scanning interfaces for Espdrones...')
+    available = espdlib.crtp.scan_interfaces()
+    print('Espdrones found:')
     for i in available:
         print(i[0])
     if len(available) == 0:
-        print('No Crazyflies found, cannot run example')
+        print('No Espdrones found, cannot run example')
     else:
-        with SyncCrazyflie(available[0][0], cf=Crazyflie(rw_cache='./cache')) as scf:
+        with SyncEspdrone(available[0][0], ed=Espdrone(rw_cache='./cache')) as sed:
             # We take off when the commander is created
-            with MotionCommander(scf) as mc:
+            with MotionCommander(sed) as mc:
                 time.sleep(1)
 
                 # There is a set of functions that move a specific distance
@@ -91,7 +91,7 @@ if __name__ == '__main__':
                 time.sleep(1)
 
                 # There is also a set of functions that start a motion. The
-                # Crazyflie will keep on going until it gets a new command.
+                # Espdrone will keep on going until it gets a new command.
 
                 mc.start_left(velocity=0.5)
                 # The motion is started and we can do other stuff, printing for

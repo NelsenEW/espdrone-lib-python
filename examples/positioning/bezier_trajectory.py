@@ -66,7 +66,7 @@ class Node:
         If q2 is missing it will be set to generate no acceleration in q0.
         If q3 is missing it will be set to generate no jerk in q0.
 
-        If only q0 is set, the node will represent a point where the Crazyflie
+        If only q0 is set, the node will represent a point where the Espdrone
         has no velocity. Good for starting and stopping.
 
         To get a fluid motion between segments, q1 must be set.
@@ -147,7 +147,7 @@ class Segment:
     to the Node to maintain continuous position, velocity, acceleration and
     jerk through the Node.
     A Segment can generate a polynomial that is compatible with the High Level
-    Commander, either in python to be sent to the Crazyflie, or as C code to be
+    Commander, either in python to be sent to the Espdrone, or as C code to be
     used in firmware.
     A Segment can also be rendered in Vispy.
     """
