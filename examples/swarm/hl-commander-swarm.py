@@ -34,14 +34,14 @@ the Swarm class.
 """
 import time
 
-import cflib.crtp
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.swarm import CachedCfFactory
-from cflib.crazyflie.swarm import Swarm
-from cflib.crazyflie.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncLogger import SyncLogger
 
 
-def wait_for_position_estimator(scf):
+def wait_for_position_estimator(sed):
     print('Waiting for estimator to find position...')
 
     log_config = LogConfig(name='Kalman Variance', period_in_ms=500)
@@ -55,7 +55,7 @@ def wait_for_position_estimator(scf):
 
     threshold = 0.001
 
-    with SyncLogger(scf, log_config) as logger:
+    with SyncLogger(sed, log_config) as logger:
         for log_entry in logger:
             data = log_entry[1]
 
@@ -82,32 +82,32 @@ def wait_for_position_estimator(scf):
                 break
 
 
-def reset_estimator(scf):
-    cf = scf.cf
-    cf.param.set_value('kalman.resetEstimation', '1')
+def reset_estimator(sed):
+    ed = sed.ed
+    ed.param.set_value('kalman.resetEstimation', '1')
     time.sleep(0.1)
-    cf.param.set_value('kalman.resetEstimation', '0')
-    wait_for_position_estimator(scf)
+    ed.param.set_value('kalman.resetEstimation', '0')
+    wait_for_position_estimator(sed)
 
 
-def activate_high_level_commander(scf):
-    scf.cf.param.set_value('commander.enHighLevel', '1')
+def activate_high_level_commander(sed):
+    sed.ed.param.set_value('commander.enHighLevel', '1')
 
 
-def activate_mellinger_controller(scf, use_mellinger):
+def activate_mellinger_controller(sed, use_mellinger):
     controller = 1
     if use_mellinger:
         controller = 2
-    scf.cf.param.set_value('stabilizer.controller', controller)
+    sed.ed.param.set_value('stabilizer.controller', controller)
 
 
-def run_shared_sequence(scf):
-    activate_mellinger_controller(scf, False)
+def run_shared_sequence(sed):
+    activate_mellinger_controller(sed, False)
 
     box_size = 1
     flight_time = 2
 
-    commander = scf.cf.high_level_commander
+    commander = sed.ed.high_level_commander
 
     commander.takeoff(1.0, 2.0)
     time.sleep(3)
@@ -137,8 +137,8 @@ uris = {
 }
 
 if __name__ == '__main__':
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    factory = CachedCfFactory(rw_cache='./cache')
+    edlib.crtp.init_drivers(enable_debug_driver=False)
+    factory = CachededFactory(rw_cache='./cache')
     with Swarm(uris, factory=factory) as swarm:
         swarm.parallel_safe(activate_high_level_commander)
         swarm.parallel_safe(reset_estimator)

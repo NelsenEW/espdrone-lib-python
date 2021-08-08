@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2019 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -24,17 +24,17 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects to the crazyflie at `URI` and writes to
+Simple example that connects to the espdrone at `URI` and writes to
 parameters that control the LED-ring,
 it has been tested with (and designed for) the LED-ring deck.
 
-Change the URI variable to your Crazyflie configuration.
+Change the URI variable to your Espdrone configuration.
 """
 import logging
 import time
 
-import cflib.crtp
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+import edlib.crtp
+from edlib.espdrone.syncEspdrone import SyncEspdrone
 
 URI = 'radio://0/80/250K'
 
@@ -44,31 +44,31 @@ logging.basicConfig(level=logging.ERROR)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
-    with SyncCrazyflie(URI) as scf:
-        cf = scf.cf
+    with SyncEspdrone(URI) as sed:
+        ed = sed.ed
 
         # Set solid color effect
-        cf.param.set_value('ring.effect', '7')
+        ed.param.set_value('ring.effect', '7')
         # Set the RGB values
-        cf.param.set_value('ring.solidRed', '100')
-        cf.param.set_value('ring.solidGreen', '0')
-        cf.param.set_value('ring.solidBlue', '0')
+        ed.param.set_value('ring.solidRed', '100')
+        ed.param.set_value('ring.solidGreen', '0')
+        ed.param.set_value('ring.solidBlue', '0')
         time.sleep(2)
 
         # Set black color effect
-        cf.param.set_value('ring.effect', '0')
+        ed.param.set_value('ring.effect', '0')
         time.sleep(1)
 
         # Set fade to color effect
-        cf.param.set_value('ring.effect', '14')
+        ed.param.set_value('ring.effect', '14')
         # Set fade time i seconds
-        cf.param.set_value('ring.fadeTime', '1.0')
+        ed.param.set_value('ring.fadeTime', '1.0')
         # Set the RGB values in one uint32 0xRRGGBB
-        cf.param.set_value('ring.fadeColor', '0x0000A0')
+        ed.param.set_value('ring.fadeColor', '0x0000A0')
         time.sleep(1)
-        cf.param.set_value('ring.fadeColor', '0x00A000')
+        ed.param.set_value('ring.fadeColor', '0x00A000')
         time.sleep(1)
-        cf.param.set_value('ring.fadeColor', '0xA00000')
+        ed.param.set_value('ring.fadeColor', '0xA00000')
         time.sleep(1)

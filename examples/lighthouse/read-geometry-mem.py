@@ -23,15 +23,15 @@
 #  MA  02110-1301, USA.
 """
 Example of how to read the Lighthouse base station geometry memory from a
-Crazyflie
+Espdrone
 """
 import logging
 import time
 
-import cflib.crtp  # noqa
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.mem import MemoryElement
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+import edlib.crtp  # noqa
+from edlib.espdrone import Espdrone
+from edlib.espdrone.mem import MemoryElement
+from edlib.espdrone.syncEspdrone import SyncEspdrone
 # Only output errors from the logging framework
 
 logging.basicConfig(level=logging.ERROR)
@@ -41,8 +41,8 @@ class ReadMem:
     def __init__(self, uri):
         self.got_data = False
 
-        with SyncCrazyflie(uri, cf=Crazyflie(rw_cache='./cache')) as scf:
-            mems = scf.cf.mem.get_mems(MemoryElement.TYPE_LH)
+        with SyncEspdrone(uri, ed=Espdrone(rw_cache='./cache')) as sed:
+            mems = sed.ed.mem.get_mems(MemoryElement.TYPE_LH)
 
             count = len(mems)
             if count != 1:
@@ -60,10 +60,10 @@ class ReadMem:
 
 
 if __name__ == '__main__':
-    # URI to the Crazyflie to connect to
+    # URI to the Espdrone to connect to
     uri = 'radio://0/80/2M'
 
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
     ReadMem(uri)

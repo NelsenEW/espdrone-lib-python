@@ -24,74 +24,74 @@
 import time
 import unittest
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.mem import MemoryElement
-from cflib.crazyflie.swarm import CachedCfFactory
-from cflib.crazyflie.swarm import Swarm
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
-from cflib.crazyflie.syncLogger import SyncLogger
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.log import LogConfig
+from edlib.espdrone.mem import MemoryElement
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncEspdrone import SyncEspdrone
+from edlib.espdrone.syncLogger import SyncLogger
 from sys_test.swarm_test_rig.rig_support import RigSupport
 
 
 class TestMemoryMapping(unittest.TestCase):
     def setUp(self):
-        cflib.crtp.init_drivers(enable_debug_driver=False)
+        edlib.crtp.init_drivers(enable_debug_driver=False)
         self.test_rig_support = RigSupport()
 
-    def test_memory_mapping_with_one_cf(self):
+    def test_memory_mapping_with_one_ed(self):
         # Fixture
         uri = self.test_rig_support.all_uris[0]
         self.test_rig_support.restart_devices([uri])
-        cf = Crazyflie(rw_cache='./cache')
+        ed = Espdrone(rw_cache='./cache')
 
         # Test and Assert
-        with SyncCrazyflie(uri, cf=cf) as scf:
-            self.assert_memory_mapping(scf)
+        with SyncEspdrone(uri, ed=ed) as sed:
+            self.assert_memory_mapping(sed)
 
-    def test_memory_mapping_with_all_cfs(self):
+    def test_memory_mapping_with_all_eds(self):
         # Fixture
         uris = self.test_rig_support.all_uris
         self.test_rig_support.restart_devices(uris)
-        factory = CachedCfFactory(rw_cache='./cache')
+        factory = CachededFactory(rw_cache='./cache')
 
         # Test and Assert
         with Swarm(uris, factory=factory) as swarm:
             swarm.parallel_safe(self.assert_memory_mapping)
 
-    def test_memory_mapping_with_reuse_of_cf_object(self):
+    def test_memory_mapping_with_reuse_of_ed_object(self):
         # Fixture
         uri = self.test_rig_support.all_uris[0]
         self.test_rig_support.restart_devices([uri])
-        cf = Crazyflie(rw_cache='./cache')
+        ed = Espdrone(rw_cache='./cache')
 
         # Test and Assert
         for connections in range(10):
-            with SyncCrazyflie(uri, cf=cf) as scf:
+            with SyncEspdrone(uri, ed=ed) as sed:
                 for mem_ops in range(5):
-                    self.assert_memory_mapping(scf)
+                    self.assert_memory_mapping(sed)
 
     # Utils
 
-    def assert_memory_mapping(self, scf):
-        mems = scf.cf.mem.get_mems(MemoryElement.TYPE_MEMORY_TESTER)
+    def assert_memory_mapping(self, sed):
+        mems = sed.ed.mem.get_mems(MemoryElement.TYPE_MEMORY_TESTER)
         count = len(mems)
         self.assertEqual(1, count, 'unexpected number of memories found')
 
         self.verify_reading_memory_data(mems)
-        self.verify_writing_memory_data(mems, scf)
+        self.verify_writing_memory_data(mems, sed)
 
-    def verify_writing_memory_data(self, mems, scf):
+    def verify_writing_memory_data(self, mems, sed):
         self.wrote_data = False
-        scf.cf.param.set_value('memTst.resetW', '1')
+        sed.ed.param.set_value('memTst.resetW', '1')
         time.sleep(0.1)
         mems[0].write_data(5, 1000, self._data_written)
         while not self.wrote_data:
             time.sleep(1)
         log_conf = LogConfig(name='memtester', period_in_ms=100)
         log_conf.add_variable('memTst.errCntW', 'uint32_t')
-        with SyncLogger(scf, log_conf) as logger:
+        with SyncLogger(sed, log_conf) as logger:
             for log_entry in logger:
                 errorCount = log_entry[1]['memTst.errCntW']
                 self.assertEqual(0, errorCount)

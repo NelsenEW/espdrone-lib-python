@@ -23,8 +23,8 @@
 #  MA  02110-1301, USA.
 import time
 
-from cflib.crtp import RadioDriver
-from cflib.drivers.crazyradio import Crazyradio
+from edlib.crtp import RadioDriver
+from edlib.drivers.crazyradio import Crazyradio
 
 
 class RigSupport:

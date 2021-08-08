@@ -8,7 +8,7 @@
 #
 #  Copyright (C) Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@
 #  MA  02110-1301, USA.
 import unittest
 
-from cflib.utils.callbacks import Caller
+from edlib.utils.callbacks import Caller
 
 
 class CallerTest(unittest.TestCase):

@@ -1,10 +1,10 @@
 ---
-title: Using Matlab with the Crazyflie API
+title: Using Matlab with the Espdrone API
 page_id: matlab 
 ---
 
 
-Using Matlab with the Crazyflie API is easy -- you just need to install
+Using Matlab with the Espdrone API is easy -- you just need to install
 the python 'matlab engine' and then can access all matlab commands
 directly from python.
 
@@ -13,7 +13,7 @@ Prerequisites
 
 1.  MATLAB 2014b or later
 2.  64 bit python 2.7, 3.3 or 3.4
-3.  The Crazyflie API
+3.  The Espdrone API
 
 Installing the Matlab python engine
 -----------------------------------
@@ -52,7 +52,7 @@ Using the Matlab Python engine
 ------------------------------
 
 Once you have installed the matlab engine, you can use any matlab
-commands (or your own matlab scripts) from within the Crazyflie API. To
+commands (or your own matlab scripts) from within the Espdrone API. To
 do this:
 
 1.  Import the matlab engine with: `import matlab.engine`{.python}

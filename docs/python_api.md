@@ -1,9 +1,9 @@
 ---
-title: The Crazyflie Python API
+title: The Espdrone Python API
 page_id: python_api 
 ---
 
-In order to easily use and control the Crazyflie there\'s an library
+In order to easily use and control the Espdrone there\'s an library
 made in Python that gives high-level functions and hides the details.
 This page contains generic information about how to use this library and
 the API that it implements.
@@ -11,8 +11,8 @@ the API that it implements.
 If you are interested in more details look in the PyDoc in the code or:
 
 -   Communication protocol for
-    [logging](https://www.bitcraze.io/docs/crazyflie-firmware/master/ctrp_log/) or
-    [parameters](https://www.bitcraze.io/docs/crazyflie-firmware/master/ctrp_parameters/)
+    [logging](https://www.bitcraze.io/docs/espdrone-firmware/master/ctrp_log/) or
+    [parameters](https://www.bitcraze.io/docs/espdrone-firmware/master/ctrp_parameters/)
 
 Structure of the library
 ========================
@@ -48,7 +48,7 @@ configuration is added to the firmware the firmware will automatically
 send back the data at every period. These configurations are used in the
 following way:
 
--   Connect to the Crazyflie (log configurations needs a TOC to work)
+-   Connect to the Espdrone (log configurations needs a TOC to work)
 -   Create a log configuration that contains a number of variables to
     log and a period at which they should be logged
 -   Add the log configuration. This will also validate that the log
@@ -82,7 +82,7 @@ forwarded to callbacks registered for reading this parameter. The
 parameters should be used in the following way:
 
 -   Register parameter updated callbacks at any time in your application
--   Connect to your Crazyflie (this will download the parameter TOC)
+-   Connect to your Espdrone (this will download the parameter TOC)
 -   Request updates for all the parameters
 -   The library will call all the callbacks registered
 -   The host can now write parameters that will be forwarded to the
@@ -132,7 +132,7 @@ Debug driver
 ------------
 
 The library contains a special link driver, named `DebugDriver`. This
-driver will emulate a Crazyflie and is used for testing of the UI and
+driver will emulate a Espdrone and is used for testing of the UI and
 library. Normally this will be hidden from the user except if explicitly
 enabled in the configuration file. The driver supports the following:
 
@@ -189,37 +189,37 @@ the following callbacks when events occur:
 To register for callbacks the following is used:
 
 ``` {.python}
-    crazyflie = Crazyflie()
-    crazyflie.connected.add_callback(crazyflie_connected)
+    espdrone = Espdrone()
+    espdrone.connected.add_callback(espdrone_connected)
 ```
 
-Finding a Crazyflie and connecting
+Finding a Espdrone and connecting
 ==================================
 
-The first thing to do is to find a Crazyflie quadcopter that we can
+The first thing to do is to find a Espdrone quadcopter that we can
 connect to. This is done by queuing the library that will scan all the
 available interfaces (currently the debug and radio interface).
 
 ``` {.python}
-    cflib.crtp.init_drivers()
-    available = cflib.crtp.scan_interfaces()
+    edlib.crtp.init_drivers()
+    available = edlib.crtp.scan_interfaces()
     for i in available:
         print "Interface with URI [%s] found and name/comment [%s]" % (i[0], i[1])
 ```
 
-Opening and closing a communication link is doing by using the Crazyflie
+Opening and closing a communication link is doing by using the Espdrone
 object:
 
 ``` {.python}
-    crazyflie = Crazyflie()
-    crazyflie.connected.add_callback(crazyflie_connected)
-    crazyflie.open_link("radio://0/10/250K")
+    espdrone = Espdrone()
+    espdrone.connected.add_callback(espdrone_connected)
+    espdrone.open_link("radio://0/10/250K")
 ```
 
 Then you can use the following to close the link again:
 
 ``` {.python}
-    crazyflie.close_link()
+    espdrone.close_link()
 ```
 
 Sending control commands
@@ -245,7 +245,7 @@ To send a new control set-point use the following:
     pitch   = 0.0
     yawrate = 0
     thrust  = 0
-    crazyflie.commander.send_setpoint(roll, pitch, yawrate, thrust)
+    espdrone.commander.send_setpoint(roll, pitch, yawrate, thrust)
 ```
 
 Thrust is an integer value ranging from 10001 (next to no power) to
@@ -262,33 +262,33 @@ Parameters
 The parameter framework is used to read and set parameters. This
 functionality should be used when:
 
--   The parameter is not changed by the Crazyflie but by the client
+-   The parameter is not changed by the Espdrone but by the client
 -   The parameter is not read periodically
 
 If this is not the case then the logging framework should be used
 instead.
 
-To set a parameter you have to the connected to the Crazyflie. A
+To set a parameter you have to the connected to the Espdrone. A
 parameter is set using:
 
 ``` {.python}
     param_name = "group.name"
     param_value = 3
-    crazyflie.param.set_value(param_name, param_value)
+    espdrone.param.set_value(param_name, param_value)
 ```
 
 The parameter reading is done using callbacks. When a parameter is
 updated from the host (using the code above) the parameter will be read
 back by the library and this will trigger the callbacks. Parameter
 callbacks can be added at any time (you don\'t have to be connected to a
-Crazyflie).
+Espdrone).
 
 ``` {.python}
     add_update_callback(group, name=None, cb=None)
         """
         Add a callback for a specific parameter name or group. If not name is specified then
         all parameters in the group will trigger the callback. This callback will be executed
-        when a new value is read from the Crazyflie.
+        when a new value is read from the Espdrone.
         """
 
     request_param_update(complete_name)
@@ -301,7 +301,7 @@ Crazyflie).
 Here\'s an example of how to use the calls.
 
 ``` {.python}
-    crazyflie.param.add_update_callback(group="group", name="name", param_updated_callback)
+    espdrone.param.add_update_callback(group="group", name="name", param_updated_callback)
 
     def param_updated_callback(name, value):
         print "%s has value %d" % (name, value)
@@ -314,7 +314,7 @@ The logging framework is used to enable the \"automatic\" sending of
 variable values at specified intervals to the client. This functionality
 should be used when:
 
--   The variable is changed by the Crazyflie and not by the client
+-   The variable is changed by the Espdrone and not by the client
 -   The variable is updated at high rate and you want to read the value
     periodically
 
@@ -342,7 +342,7 @@ The API to create and get information from LogConfig:
 
         If no fetch_as type is supplied, then the stored as type will be used
         (i.e the type of the fetched variable is the same as it's stored in the
-        Crazyflie)."""
+        Espdrone)."""
 
     start()
         """Start the logging for this entry"""
@@ -351,10 +351,10 @@ The API to create and get information from LogConfig:
         """Stop the logging for this entry"""
 
     delete()
-        """Delete this entry in the Crazyflie"""
+        """Delete this entry in the Espdrone"""
 ```
 
-The API for the log in the Crazyflie:
+The API for the log in the Espdrone:
 
 ``` {.python}
     add_config(logconf)
@@ -364,7 +364,7 @@ The API for the log in the Crazyflie:
         and listeners for new log configurations will be notified. When
         validating the configuration the variables are checked against the TOC
         to see that they actually exist. If they don't then the configuration
-        cannot be used. Since a valid TOC is required, a Crazyflie has to be
+        cannot be used. Since a valid TOC is required, a Espdrone has to be
         connected when calling this method, otherwise it will fail."""
 ```
 
@@ -387,12 +387,12 @@ internal type to transferred type before transfers:
 -   FP16: 16bit version of floating point, allows to pack more variable
     in one packet at the expense of precision.
 
-The logging cannot be started until your are connected to a Crazyflie:
+The logging cannot be started until your are connected to a Espdrone:
 
 ``` {.python}
-    # Callback called when the connection is established to the Crazyflie
+    # Callback called when the connection is established to the Espdrone
     def connected(link_uri):
-        crazyflie.log.add_config(logconf)
+        espdrone.log.add_config(logconf)
 
         if logconf.valid:
             logconf.data_received_cb.add_callback(data_received_callback)

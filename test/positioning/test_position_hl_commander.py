@@ -25,10 +25,10 @@ import math
 import sys
 import unittest
 
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie import HighLevelCommander
-from cflib.crazyflie import Param
-from cflib.positioning.position_hl_commander import PositionHlCommander
+from edlib.espdrone import Espdrone
+from edlib.espdrone import HighLevelCommander
+from edlib.espdrone import Param
+from edlib.positioning.position_hl_commander import PositionHlCommander
 
 if sys.version_info < (3, 3):
     from mock import MagicMock, patch, call
@@ -41,17 +41,17 @@ class TestPositionHlCommander(unittest.TestCase):
     def setUp(self):
         self.commander_mock = MagicMock(spec=HighLevelCommander)
         self.param_mock = MagicMock(spec=Param)
-        self.cf_mock = MagicMock(spec=Crazyflie)
-        self.cf_mock.high_level_commander = self.commander_mock
-        self.cf_mock.param = self.param_mock
-        self.cf_mock.is_connected.return_value = True
+        self.ed_mock = MagicMock(spec=Espdrone)
+        self.ed_mock.high_level_commander = self.commander_mock
+        self.ed_mock.param = self.param_mock
+        self.ed_mock.is_connected.return_value = True
 
-        self.sut = PositionHlCommander(self.cf_mock)
+        self.sut = PositionHlCommander(self.ed_mock)
 
     def test_that_the_estimator_is_reset_on_take_off(
             self, sleep_mock):
         # Fixture
-        sut = PositionHlCommander(self.cf_mock, 1.0, 2.0, 3.0)
+        sut = PositionHlCommander(self.ed_mock, 1.0, 2.0, 3.0)
 
         # Test
         sut.take_off()
@@ -94,7 +94,7 @@ class TestPositionHlCommander(unittest.TestCase):
     def test_that_take_off_raises_exception_if_not_connected(
             self, sleep_mock):
         # Fixture
-        self.cf_mock.is_connected.return_value = False
+        self.ed_mock.is_connected.return_value = False
 
         # Test
         # Assert
@@ -126,7 +126,7 @@ class TestPositionHlCommander(unittest.TestCase):
     def test_that_it_goes_up_to_default_height(
             self, sleep_mock):
         # Fixture
-        sut = PositionHlCommander(self.cf_mock, default_height=0.4)
+        sut = PositionHlCommander(self.ed_mock, default_height=0.4)
 
         # Test
         sut.take_off(velocity=0.6)

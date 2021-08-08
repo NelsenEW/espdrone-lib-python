@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2014 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -24,15 +24,15 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that scans for available Crazyflies and lists them.
+Simple example that scans for available Espdrones and lists them.
 """
-import cflib.crtp
+import edlib.crtp
 
 # Initiate the low level drivers
-cflib.crtp.init_drivers(enable_debug_driver=False)
+edlib.crtp.init_drivers(enable_debug_driver=False)
 
-print('Scanning interfaces for Crazyflies...')
-available = cflib.crtp.scan_interfaces()
-print('Crazyflies found:')
+print('Scanning interfaces for Espdrones...')
+available = edlib.crtp.scan_interfaces()
+print('Espdrones found:')
 for i in available:
     print(i[0])

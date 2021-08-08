@@ -1,4 +1,0 @@
-cflib
-lpslib
-sys_test
-test

@@ -24,17 +24,17 @@
 import time
 import unittest
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.swarm import CachedCfFactory
-from cflib.crazyflie.swarm import Swarm
-from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.swarm import CachededFactory
+from edlib.espdrone.swarm import Swarm
+from edlib.espdrone.syncEspdrone import SyncEspdrone
 from sys_test.swarm_test_rig.rig_support import RigSupport
 
 
 class TestConnection(unittest.TestCase):
     def setUp(self):
-        cflib.crtp.init_drivers(enable_debug_driver=False)
+        edlib.crtp.init_drivers(enable_debug_driver=False)
         self.test_rig_support = RigSupport()
 
     def test_that_connection_time_scales_with_more_devices_without_cache(self):
@@ -64,7 +64,7 @@ class TestConnection(unittest.TestCase):
         self.test_rig_support.restart_devices(self.test_rig_support.all_uris)
 
         # Fill caches first by connecting to all devices
-        factory = CachedCfFactory(rw_cache='./cache')
+        factory = CachededFactory(rw_cache='./cache')
         with Swarm(self.test_rig_support.all_uris, factory=factory):
             pass
 
@@ -103,12 +103,12 @@ class TestConnection(unittest.TestCase):
         for i in range(10):
             self.test_rig_support.restart_devices(uris)
 
-    def test_that_the_same_cf_object_can_be_connected_multiple_times(self):
+    def test_that_the_same_ed_object_can_be_connected_multiple_times(self):
         # Fixture
         self.test_rig_support.restart_devices(self.test_rig_support.all_uris)
-        cf = Crazyflie(rw_cache='./cache')
+        ed = Espdrone(rw_cache='./cache')
 
         # Test
         for uri in self.test_rig_support.all_uris:
-            with SyncCrazyflie(uri, cf=cf):
+            with SyncEspdrone(uri, ed=ed):
                 pass

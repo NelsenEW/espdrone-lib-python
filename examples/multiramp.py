@@ -8,7 +8,7 @@
 #
 #  Copyright (C) 2014 Bitcraze AB
 #
-#  Crazyflie Nano Quadcopter Client
+#  Espdrone Nano Quadcopter Client
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU General Public License
@@ -24,41 +24,41 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA  02110-1301, USA.
 """
-Simple example that connects 2 Crazyflies, ramp up-down the motors and
+Simple example that connects 2 Espdrones, ramp up-down the motors and
 disconnects.
 """
 import logging
 import time
 from threading import Thread
 
-import cflib
-from cflib.crazyflie import Crazyflie
+import edlib
+from edlib.espdrone import Espdrone
 
 logging.basicConfig(level=logging.ERROR)
 
 
 class MotorRampExample:
-    """Example that connects to a Crazyflie and ramps the motors up/down and
+    """Example that connects to a Espdrone and ramps the motors up/down and
     the disconnects"""
 
     def __init__(self, link_uri):
         """ Initialize and run the example with the specified link_uri """
 
-        self._cf = Crazyflie(rw_cache='./cache')
+        self._ed = Espdrone(rw_cache='./cache')
 
-        self._cf.connected.add_callback(self._connected)
-        self._cf.disconnected.add_callback(self._disconnected)
-        self._cf.connection_failed.add_callback(self._connection_failed)
-        self._cf.connection_lost.add_callback(self._connection_lost)
+        self._ed.connected.add_callback(self._connected)
+        self._ed.disconnected.add_callback(self._disconnected)
+        self._ed.connection_failed.add_callback(self._connection_failed)
+        self._ed.connection_lost.add_callback(self._connection_lost)
 
-        self._cf.open_link(link_uri)
+        self._ed.open_link(link_uri)
 
         self.connected = True
 
         print('Connecting to %s' % link_uri)
 
     def _connected(self, link_uri):
-        """ This callback is called form the Crazyflie API when a Crazyflie
+        """ This callback is called form the Espdrone API when a Espdrone
         has been connected and the TOCs have been downloaded."""
 
         # Start a separate thread to do the motor test.
@@ -66,19 +66,19 @@ class MotorRampExample:
         Thread(target=self._ramp_motors).start()
 
     def _connection_failed(self, link_uri, msg):
-        """Callback when connection initial connection fails (i.e no Crazyflie
+        """Callback when connection initial connection fails (i.e no Espdrone
         at the specified address)"""
         print('Connection to %s failed: %s' % (link_uri, msg))
         self.connected = False
 
     def _connection_lost(self, link_uri, msg):
         """Callback when disconnected after a connection has been made (i.e
-        Crazyflie moves out of range)"""
+        Espdrone moves out of range)"""
         print('Connection to %s lost: %s' % (link_uri, msg))
         self.connected = False
 
     def _disconnected(self, link_uri):
-        """Callback when the Crazyflie is disconnected (called in all cases)"""
+        """Callback when the Espdrone is disconnected (called in all cases)"""
         print('Disconnected from %s' % link_uri)
         self.connected = False
 
@@ -91,26 +91,26 @@ class MotorRampExample:
         yawrate = 0
 
         # Unlock startup thrust protection
-        self._cf.commander.send_setpoint(0, 0, 0, 0)
+        self._ed.commander.send_setpoint(0, 0, 0, 0)
 
         while thrust >= 20000:
-            self._cf.commander.send_setpoint(roll, pitch, yawrate, thrust)
+            self._ed.commander.send_setpoint(roll, pitch, yawrate, thrust)
             time.sleep(0.1)
             if thrust >= 25000:
                 thrust_mult = -1
             thrust += thrust_step * thrust_mult
-        self._cf.commander.send_setpoint(0, 0, 0, 0)
+        self._ed.commander.send_setpoint(0, 0, 0, 0)
         # Make sure that the last packet leaves before the link is closed
         # since the message queue is not flushed before closing
         time.sleep(0.1)
-        self._cf.close_link()
+        self._ed.close_link()
 
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
-    cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Connect the two Crazyflies and ramps them up-down
-    le0 = MotorRampExample('radio://0/70/2M')
-    le1 = MotorRampExample('radio://1/80/250K')
-    while(le0.connected or le1.connected):
+    edlib.crtp.init_drivers(enable_debug_driver=False)
+    # Connect the two espdrones and ramps them up-down
+    me0 = MotorRampExample('192.168.0.112')
+    me1 = MotorRampExample('192.168.0.111')
+    while(me0.connected or me1.connected):
         time.sleep(0.1)

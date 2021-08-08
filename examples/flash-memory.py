@@ -23,9 +23,9 @@ import os
 import sys
 import time
 
-import cflib.crtp
-from cflib.crazyflie import Crazyflie
-from cflib.crazyflie.mem import MemoryElement
+import edlib.crtp
+from edlib.espdrone import Espdrone
+from edlib.espdrone.mem import MemoryElement
 
 
 class NotConnected(RuntimeError):
@@ -38,14 +38,14 @@ class Flasher(object):
     """
 
     def __init__(self, link_uri):
-        self._cf = Crazyflie()
+        self._ed = Espdrone()
         self._link_uri = link_uri
 
-        # Add some callbacks from the Crazyflie API
-        self._cf.connected.add_callback(self._connected)
-        self._cf.disconnected.add_callback(self._disconnected)
-        self._cf.connection_failed.add_callback(self._connection_failed)
-        self._cf.connection_lost.add_callback(self._connection_lost)
+        # Add some callbacks from the Espdrone API
+        self._ed.connected.add_callback(self._connected)
+        self._ed.disconnected.add_callback(self._disconnected)
+        self._ed.connection_failed.add_callback(self._connection_failed)
+        self._ed.connection_lost.add_callback(self._connection_lost)
 
         # Initialize variables
         self.connected = False
@@ -54,14 +54,14 @@ class Flasher(object):
 
     def connect(self):
         """
-        Connect to the crazyflie.
+        Connect to the espdrone.
         """
         print('Connecting to %s' % self._link_uri)
-        self._cf.open_link(self._link_uri)
+        self._ed.open_link(self._link_uri)
 
     def disconnect(self):
         print('Disconnecting from %s' % self._link_uri)
-        self._cf.close_link()
+        self._ed.close_link()
 
     def wait_for_connection(self, timeout=10):
         """
@@ -86,7 +86,7 @@ class Flasher(object):
         """
         if not self.connected:
             raise NotConnected()
-        return self._cf.mem.get_mems(MemoryElement.TYPE_1W)
+        return self._ed.mem.get_mems(MemoryElement.TYPE_1W)
 
     # Callbacks
 
@@ -131,20 +131,20 @@ def choose(items, title_text, question_text):
 
 def scan():
     """
-    Scan for Crazyflie and return its URI.
+    Scan for Espdrone and return its URI.
     """
 
     # Initiate the low level drivers
-    cflib.crtp.init_drivers(enable_debug_driver=False)
+    edlib.crtp.init_drivers(enable_debug_driver=False)
 
-    # Scan for Crazyflies
-    print('Scanning interfaces for Crazyflies...')
-    available = cflib.crtp.scan_interfaces()
+    # Scan for Espdrones
+    print('Scanning interfaces for Espdrones...')
+    available = edlib.crtp.scan_interfaces()
     interfaces = [uri for uri, _ in available]
 
     if not interfaces:
         return None
-    return choose(interfaces, 'Crazyflies found:', 'Select interface: ')
+    return choose(interfaces, 'Espdrones found:', 'Select interface: ')
 
 
 if __name__ == '__main__':
@@ -158,7 +158,7 @@ if __name__ == '__main__':
           'Please make sure that your NRF firmware is compiled without\n'
           'BLE support for this to work.\n'
           'See '
-          'https://github.com/bitcraze/crazyflie-clients-python/issues/166\n'
+          'https://github.com/bitcraze/espdrone-clients-python/issues/166\n'
           '###\n')
 
     # Initialize flasher
@@ -168,7 +168,7 @@ if __name__ == '__main__':
         flasher.disconnect()
         sys.exit(1)
 
-    # Connect to Crazyflie
+    # Connect to Espdrone
     flasher.connect()
     connected = flasher.wait_for_connection()
     if not connected:

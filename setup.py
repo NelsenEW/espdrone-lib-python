@@ -3,12 +3,12 @@ from setuptools import find_packages
 from setuptools import setup
 
 setup(
-    name='cflib',
+    name='edlib',
     version='0.1.8',
     packages=find_packages(exclude=['examples', 'tests']),
 
-    description='Crazyflie python driver',
-    url='https://github.com/bitcraze/crazyflie-lib-python',
+    description='Espdrone python driver',
+    url='https://github.com/NelsenEW/espdrone-lib-python',
 
     author='Bitcraze and contributors',
     author_email='contact@bitcraze.io',
@@ -22,7 +22,7 @@ setup(
         'Programming Language :: Python :: 3'
     ],
 
-    keywords='driver crazyflie quadcopter',
+    keywords='driver espdrone quadcopter',
 
-    install_requires='pyusb>=1.0.0b2',
+    install_requires=['pyusb==1.0.0b2','pip==19.3', 'opencv-python<4.3'],
 )
