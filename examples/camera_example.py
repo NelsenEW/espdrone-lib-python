@@ -39,14 +39,22 @@ import argparse
 
 import edlib.crtp  # noqa
 from edlib.espdrone import Espdrone
-from edlib.espdrone.syncEspdrone import SyncEspdrone
-from edlib.utils.camera import Camera
 import cv2
-
+import sys
+import time
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
 
+ed = Espdrone(rw_cache='./cache')
+camera = ed.camera
+
+def show_image(image, fps):
+    cv2.imshow('unique_window_identifier', image)
+    cv2.setWindowTitle("unique_window_identifier", f"fps= {fps}")
+    if cv2.waitKey(1) == ord('q'):
+        ed.close_link()
+        sys.exit(1)
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
@@ -59,13 +67,6 @@ if __name__ == '__main__':
     else:
         uri = '192.168.43.42'
 
-    ed = Espdrone(rw_cache='./cache')
-    with SyncEspdrone(uri, ed=ed) as sed:
-        with Camera(sed) as camera:
-            while True:
-                if camera.image is not None:
-                    cv2.imshow('unique_window_identifier',camera.image)
-                    cv2.setWindowTitle("unique_window_identifier", f"fps= {camera.fps}")
-                    if cv2.waitKey(1) == ord('q'):
-                        break
-            cv2.destroyAllWindows()
+    ed.open_link(uri)
+    camera.start()
+    camera.image_received_cb.add_callback(show_image)

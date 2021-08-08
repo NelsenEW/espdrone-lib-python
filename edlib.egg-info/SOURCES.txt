@@ -1,3 +1,4 @@
+LICENSE.txt
 README.md
 setup.cfg
 setup.py
@@ -23,6 +24,7 @@ edlib/drivers/__init__.py
 edlib/drivers/crazyradio.py
 edlib/drivers/edusb.py
 edlib/espdrone/__init__.py
+edlib/espdrone/camera.py
 edlib/espdrone/commander.py
 edlib/espdrone/console.py
 edlib/espdrone/extpos.py
@@ -42,7 +44,6 @@ edlib/positioning/motion_commander.py
 edlib/positioning/position_hl_commander.py
 edlib/utils/__init__.py
 edlib/utils/callbacks.py
-edlib/utils/camera.py
 edlib/utils/multiranger.py
 lpslib/__init__.py
 lpslib/lopoanchor.py

@@ -41,6 +41,7 @@ from threading import Thread
 from threading import Timer
 
 import edlib.crtp
+from .camera import Camera
 from .commander import Commander
 from .console import Console
 from .extpos import Extpos
@@ -70,7 +71,7 @@ class State:
 class Espdrone():
     """The Espdrone class"""
 
-    def __init__(self, link=None, ro_cache=None, rw_cache=None):
+    def __init__(self, name=None, link=None, ro_cache=None, rw_cache=None):
         """
         Create the objects from this module and register callbacks.
 
@@ -99,8 +100,9 @@ class Espdrone():
         self.link_quality_updated = Caller()
 
         self.state = State.DISCONNECTED
-
+        
         self.link = link
+        self.name = name
         self._toc_cache = TocCache(ro_cache=ro_cache,
                                    rw_cache=rw_cache)
 
@@ -108,6 +110,7 @@ class Espdrone():
         self.incoming.setDaemon(True)
         self.incoming.start()
 
+        self.camera = Camera(self)
         self.commander = Commander(self)
         self.high_level_commander = HighLevelCommander(self)
         self.loc = Localization(self)
@@ -247,6 +250,7 @@ class Espdrone():
                 self.link.close()
                 self.link = None
             self.connection_failed.call(link_uri, exception_text)
+            raise ConnectionError()
 
     def close_link(self):
         """Close the communication link."""

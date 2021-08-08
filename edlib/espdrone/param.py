@@ -142,6 +142,7 @@ class Param():
 
         self.values = {}
 
+
     def request_update_of_all_params(self):
         """Request an update of all the parameters in the TOC"""
         for group in self.toc.toc:

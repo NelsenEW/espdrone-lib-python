@@ -30,41 +30,33 @@
 Subsystem handling camera-related data communication
 """
 
-import struct
+
+from edlib.utils.callbacks import Caller
+
+import gc
 import time
 import numpy as np
 import cv2
-import sys
-if sys.version_info[0] < 3:
-    from urllib2 import urlopen
-else:
-    from urllib.request import urlopen
+from urllib.request import urlopen
 import threading
-from edlib.espdrone.syncEspdrone import SyncEspdrone
-
-
-
+import requests
 
 class Camera():
     """
     Handle camera-related data communication with the Espdrone
     """
     CAMERA_BUFFER_SIZE = 4096
-    def __init__(self, espdrone):
+    def __init__(self, espdrone = None):
         """
         Initialize the camera object.
         """
-        if isinstance(espdrone, SyncEspdrone):
-            self._ed = espdrone.ed
-        else:
-            self._ed = espdrone
-        self._url = 'http://' + self._ed.link_uri
-        self._image = None
-        self._fps = -1
-
+        self._ed = espdrone
+        self.image_received_cb = Caller()
+        self._stream = False
+        
     def _capture_frames(self):
         bts = b''
-        while self._stream:
+        while self._stream and self._ed.link:
             try:
                 start_time = time.time()
                 bts+= self._file_stream.read(self.CAMERA_BUFFER_SIZE)
@@ -73,41 +65,40 @@ class Camera():
                 if jpghead>-1 and jpgend>-1:
                     jpg=bts[jpghead:jpgend+2]
                     bts=bts[jpgend+2:]
-                    self._image=cv2.imdecode(np.frombuffer(jpg,dtype=np.uint8),cv2.IMREAD_UNCHANGED)
-                    self._fps = 1 / (time.time() - start_time)
+                    image=cv2.imdecode(np.frombuffer(jpg,dtype=np.uint8),cv2.IMREAD_UNCHANGED)
+                    fps = 1 / (time.time() - start_time)
+                    if self._stream:
+                        self.image_received_cb.call(image, fps)
+                    
+
             except Exception as e:
                 print("Error:" + str(e))
                 bts=b''
                 self._file_stream = urlopen(self._url)
                 continue
+        self._file_stream.close()
+        self._stream = False
 
     def _is_streaming(self):
         return (hasattr(self, '_thread') and self._thread.isAlive())
 
     def start(self):
         try:
-            self._file_stream = urlopen(self._url + "/stream.jpg")
+            self._url = 'http://' + self._ed.link_uri + "/stream.jpg"
+            self._file_stream = urlopen(self._url)
             if not self._is_streaming():
                 self._stream = True
-                self._thread = threading.Thread(target=self._capture_frames)
+                self._thread = threading.Thread(target=self._capture_frames, daemon=True)
                 self._thread.start()
         except Exception as e:
             print(e)      
 
     def stop(self):
         if hasattr(self, '_thread'):
+            self._file_stream.close()
             self._stream = False
             self._thread.join()
     
-    @property
-    def image(self):
-        if self._is_streaming():
-            return self._image
-
-    @property
-    def fps(self):
-        return self._fps
-        
     def __enter__(self):
         self.start()
         return self
