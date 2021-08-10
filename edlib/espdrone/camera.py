@@ -39,7 +39,6 @@ import numpy as np
 import cv2
 from urllib.request import urlopen
 import threading
-import requests
 
 class Camera():
     """
