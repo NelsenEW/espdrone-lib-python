@@ -26,10 +26,7 @@
 #  MA  02110-1301, USA.
 """ CRTP UDP Driver. Work either with the UDP server or with an UDP device
 See udpserver.py for the protocol"""
-import re
-import struct
 import sys
-import binascii
 import ipaddress
 from socket import *
 
@@ -78,12 +75,10 @@ class UdpDriver(CRTPDriver):
     
         self.socket.connect(self.addr)
         str1=b'\xFF\x01\x01\x01'
-        # Add this to the server clients list
         self.socket.sendto(str1,self.addr)
-        #print(str1)
 
     def receive_packet(self, time=0):
-        data, addr = self.socket.recvfrom(1024)
+        data = self.socket.recv(1024)
         if data:
             pk = CRTPPacket(data[0], list(data[1:(len(data)-1)]))
             self.link_keep_alive += 1
@@ -91,12 +86,6 @@ class UdpDriver(CRTPDriver):
                 str1 = b'\xFF\x01\x01\x01'
                 self.socket.sendto(str1, self.addr)
                 self.link_keep_alive = 0
-            # data = struct.unpack('B' * (len(data) - 1), data[0:len(data) - 1])#modify @libo
-            # pk = CRTPPacket()
-            # pk.header = data[0] #modify port @libo
-            # pk.data = data[1:]
-            #print("recv: ")
-            #print(data)
             return pk
 
         try:
@@ -111,7 +100,6 @@ class UdpDriver(CRTPDriver):
             return None
 
     def send_packet(self, pk):
-        #raw = (pk.header,) + struct.unpack('B' * len(pk.data), pk.data)#modify @libo
         raw = (pk.header,) + pk.datat
         cksum = 0
         for i in raw:
@@ -121,12 +109,9 @@ class UdpDriver(CRTPDriver):
         data = ''.join(chr(v) for v in raw )
         self.socket.sendto(data.encode('latin'), self.addr)
         self.link_keep_alive = 0
-        #print("send: ")
-        #print(data.encode('latin'))
 
     def close(self):
         str1=b'\xFF\x01\x01\x01'
-        # Remove this from the server clients list
         self.socket.sendto(str1, self.addr)
         self.socket.close()
 
@@ -134,4 +119,4 @@ class UdpDriver(CRTPDriver):
         return 'udp'
 
     def scan_interface(self, address):
-        return [[]]
+        return [[address, ""]]

@@ -1,30 +1,22 @@
-forked from [edlib, esp-drone branch](https://github.com/leeebo/espdrone-lib-python/tree/esp-drone)
+forked from [edlib, esp-drone branch](https://github.com/leeebo/crazyflie-lib-python/tree/esp-drone)
 
 # edlib: Espdrone python library
 
-edlib is an API written in Python that is used to communicate with the Espdrone
-and Espdrone 2.0 quadcopters. It is intended to be used by client software to
-communicate with and control a Espdrone quadcopter. For instance the [edclient][edclient] Espdrone PC client uses the edlib.
+edlib is an API written in Python that is used to communicate with the Espdrone. It is intended to be used by client software to
+communicate with and control an espdrone quadcopter. For instance the [edclient](https://github.com/NelsenEW/espdrone-clients) Espdrone PC client uses the edlib.
 
-This repository has been modified to communicate with **espdrone** as well using python.
-
-See [below](#platform-notes) for platform specific instruction.
-For more info see esp-drone [wiki](https://docs.espressif.com/projects/espressif-esp-drone/en/latest/index.html "Bitcraze Wiki").
+For more info see esp-drone [wiki](https://docs.espressif.com/projects/espressif-esp-drone/en/latest/index.html "Espdrone Wiki from espressif").
 
 
 ## Development
 ### Developing for the edclient
-1. [Clone the edlib](https://help.github.com/articles/cloning-a-repository/), 
-  `git clone git@github.com:YOUR-USERNAME/espdrone-lib-python.git`
-2. Install dependencies required by the lib: 
+* [Clone the edlib](https://help.github.com/articles/cloning-a-repository/), 
+  `git clone https://github.com/NelsenEW/espdrone-lib-python.git`
+* Install dependencies required by the lib: 
   `pip install -r requirements.txt`
 
-3.  *  `pip install -e .`
+* Install the edlib in editable mode: `pip install -e .`
 * [Uninstall the edlib if you don't want it any more](http://pip-python3.readthedocs.org/en/latest/reference/pip_uninstall.html), `pip uninstall edlib`
-
-### Linux, OSX, Windows
-
-The following should be executed in the root of the espdrone-lib-python file tree.
 
 #### Virtualenv
 This section contains a very short description of how to use [virtualenv (local python environment)](https://virtualenv.pypa.io/en/latest/) 
@@ -40,3 +32,18 @@ you can skip this section.
 
 Note: For systems that support [make](https://www.gnu.org/software/make/manual/html_node/Simple-Makefile.html), you can use `make venv` to
 create an environment, activate it and install dependencies.
+
+## Examples
+There are several examples under the `examples` directory that can be run with the following command:
+
+`python[3] path/to/example_file.py --uri [YOUR DRONE's IP]` 
+
+e.g. `python examples/basiclog.py --uri 192.168.0.105`
+
+Here is the list of the working examples:
+* [basiclog.py](examples/basiclog.py) - Log the drone roll, pitch, yaw asynchronously.
+* [basicparam.py](examples/basicparam.py) - Get the value of each parameters inside the drone, and set the pitch derivative gain controller to a random number
+* [basiclogSync.py](examples/basiclogSync.py) - Log the drone roll, pitch yaw synchronously
+* [camera_example.py](examples/camera_example.py) - Get the camera stream from the drone and show it on an opencv window
+* [multilog.py](examples/multilog.py) - Log mutliple drones roll, pitch, yaw asynchronously
+* [multiramp.py](examples/multiramp.py) - Ramp multiple drones motor

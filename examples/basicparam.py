@@ -113,7 +113,7 @@ class ParamExample:
 
             # Create a new random value [0.00,1.00] for pid_attitude.pitch_kd
             # and set it
-            pkd = 5 #random.random()
+            pkd = random.random()
             print('')
             print('Write: pid_attitude.pitch_kd={:.2f}'.format(pkd))
             # When setting a value the parameter is automatically read back
