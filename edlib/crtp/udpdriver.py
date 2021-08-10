@@ -134,4 +134,4 @@ class UdpDriver(CRTPDriver):
         return 'udp'
 
     def scan_interface(self, address):
-        return [[]]
+        return [[address, ""]]
