@@ -36,6 +36,7 @@ from array import array
 from binascii import crc32
 from functools import reduce
 from threading import Lock
+from typing import List
 
 from edlib.crtp.crtpstack import CRTPPacket
 from edlib.crtp.crtpstack import CRTPPort
@@ -691,7 +692,7 @@ class TrajectoryMemory(MemoryElement):
         self._write_finished_cb = None
 
         # A list of Poly4D objects to write to the Espdrone
-        self.poly4Ds = []
+        self.poly4Ds: List[Poly4D] = []
 
     def write_data(self, write_finished_cb):
         """Write trajectory data to the Espdrone"""

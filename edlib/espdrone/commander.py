@@ -27,6 +27,7 @@
 """
 Used for sending control setpoints to the Espdrone
 """
+from edlib.espdrone.localization import Localization
 import struct
 
 from edlib.crtp.crtpstack import CRTPPacket
@@ -40,6 +41,7 @@ TYPE_VELOCITY_WORLD = 1
 TYPE_ZDISTANCE = 2
 TYPE_HOVER = 5
 TYPE_POSITION = 7
+TYPE_FULL_STATE = 6
 
 
 class Commander():
@@ -128,6 +130,21 @@ class Commander():
         pk.data = struct.pack('<Bffff', TYPE_HOVER,
                               vx, vy, yawrate, zdistance)
         self._ed.send_packet(pk)
+
+    def send_full_state_setpoint(self, x, y, z, vx, vy, vz, ax, ay, az, quat_x, quat_y, quat_z, quat_w, rate_roll, rate_pitch, rate_yaw):
+        """
+        Full state control!
+        """
+        pk = CRTPPacket()
+        pk.port = CRTPPort.COMMANDER_GENERIC
+        pk.data = struct.pack('<Bhhhhhhhhhihhh', TYPE_POSITION,
+                            x * 1000, y * 1000, z * 1000,
+                            vx * 1000, vy * 1000, vz * 1000,
+                            ax * 1000, ay * 1000, az * 1000,
+                            Localization.quatcompress([quat_x, quat_y, quat_z, quat_w]),
+                            rate_roll * 1000, rate_pitch * 1000, rate_yaw * 1000)
+        self._ed.send_packet(pk)
+
 
     def send_position_setpoint(self, x, y, z, yaw):
         """

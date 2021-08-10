@@ -30,7 +30,9 @@ Subsytem handling localization-related data communication
 import collections
 import logging
 import struct
+import math
 
+from typing import List
 from edlib.crtp.crtpstack import CRTPPacket
 from edlib.crtp.crtpstack import CRTPPort
 from edlib.utils.callbacks import Caller
@@ -65,6 +67,7 @@ class Localization():
     COMM_GNSS_PROPRIETARY = 7
     EXT_POSE = 8
     EXT_POSE_PACKED = 9
+    EMERGENCY_RESET = 10
 
     def __init__(self, espdrone=None):
         """
@@ -107,7 +110,6 @@ class Localization():
 
         pk = LocalizationPacket(pk_type, data, decoded_data)
         self.receivedLocationPacket.call(pk)
-
 
     def send_extpos(self, pos):
         """
@@ -159,6 +161,17 @@ class Localization():
         pk.data = struct.pack('<B', self.EMERGENCY_STOP)
         self._ed.send_packet(pk)
 
+    def send_emergency_reset(self):
+        """
+        Send emergency reset
+        """
+
+        pk = CRTPPacket()
+        pk.port = CRTPPort.LOCALIZATION
+        pk.channel = self.GENERIC_CH
+        pk.data = struct.pack('<B', self.EMERGENCY_RESET)
+        self._ed.send_packet(pk)  
+
     def send_emergency_stop_watchdog(self):
         """
         Send emergency stop watchdog
@@ -169,3 +182,42 @@ class Localization():
         pk.channel = self.GENERIC_CH
         pk.data = struct.pack('<B', self.EMERGENCY_STOP_WATCHDOG)
         self._ed.send_packet(pk)
+
+    
+    @staticmethod
+    def quatdecompress(comp: int):
+        q= [0] * 4
+        sqrt1_2 = 0.70710678118654752440
+        mask = (1 << 9) - 1
+        i_largest = comp >> 30
+        sum_squares = 0
+        for i in range(3, -1, -1):
+            if (i != i_largest):
+                mag = comp & mask
+                negbit = (comp >> 9) & 0x1
+                comp = comp >> 10
+                q[i] = sqrt1_2 * mag / mask
+                if (negbit == 1):
+                    q[i] = - q[i]
+                sum_squares += q[i] * q[i]
+                
+        q[i_largest] = math.sqrt(1 - sum_squares)
+        return q
+    
+    @staticmethod
+    def quatcompress(q: List[float]):
+        sqrt1_2 = 0.70710678118654752440
+        i_largest = 0
+        for i in range(1,4):
+            if (math.fabs(q[i]) > math.fabs(q[i_largest])):
+                i_largest = i
+        negate = q[i_largest] < 0
+        comp = i_largest
+        for i in range(4):
+            if i != i_largest:
+                negbit = (q[i] < 0) ^ negate
+                mag = int(((1 << 9) - 1) * math.fabs(q[i])/ sqrt1_2 + 0.5)
+                comp = (comp << 10) | (negbit << 9) | mag
+        
+        return comp
+
