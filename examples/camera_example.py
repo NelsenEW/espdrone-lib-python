@@ -64,9 +64,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.uri:
         uri = args.uri
-    else:
+    else: 
         uri = '192.168.43.42'
 
     ed.open_link(uri)
     camera.start()
     camera.image_received_cb.add_callback(show_image)
+    while ed.link:
+        time.sleep(1)

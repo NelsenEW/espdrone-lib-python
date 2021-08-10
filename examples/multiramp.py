@@ -30,7 +30,7 @@ disconnects.
 import logging
 import time
 from threading import Thread
-
+import argparse
 import edlib
 from edlib.espdrone import Espdrone
 
@@ -85,7 +85,7 @@ class MotorRampExample:
     def _ramp_motors(self):
         thrust_mult = 1
         thrust_step = 500
-        thrust = 20000
+        thrust = 5000
         pitch = 0
         roll = 0
         yawrate = 0
@@ -93,10 +93,10 @@ class MotorRampExample:
         # Unlock startup thrust protection
         self._ed.commander.send_setpoint(0, 0, 0, 0)
 
-        while thrust >= 20000:
+        while thrust >= 5000:
             self._ed.commander.send_setpoint(roll, pitch, yawrate, thrust)
             time.sleep(0.1)
-            if thrust >= 25000:
+            if thrust >= 10000:
                 thrust_mult = -1
             thrust += thrust_step * thrust_mult
         self._ed.commander.send_setpoint(0, 0, 0, 0)
@@ -109,8 +109,16 @@ class MotorRampExample:
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
     edlib.crtp.init_drivers(enable_debug_driver=False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--uri",  nargs='+', help='The ip addresses of the drone, e.g. "192.168.0.102 192.168.0.103"', required=True)
+    args = parser.parse_args()
+    multiple_le = [MotorRampExample(uri) for uri in args.uri]
+
+    # The Espdrone lib doesn't contain anything to keep the application alive,
+    # so this is where your application should do something. In our case we
+    # are just waiting until all of them are disconnected
+    connected = True
+
     # Connect the two espdrones and ramps them up-down
-    me0 = MotorRampExample('192.168.0.112')
-    me1 = MotorRampExample('192.168.0.111')
-    while(me0.connected or me1.connected):
+    while(any([le.connected for le in multiple_le])):
         time.sleep(0.1)

@@ -26,10 +26,7 @@
 #  MA  02110-1301, USA.
 """ CRTP UDP Driver. Work either with the UDP server or with an UDP device
 See udpserver.py for the protocol"""
-import re
-import struct
 import sys
-import binascii
 import ipaddress
 from socket import *
 
@@ -81,7 +78,7 @@ class UdpDriver(CRTPDriver):
         self.socket.sendto(str1,self.addr)
 
     def receive_packet(self, time=0):
-        data, addr = self.socket.recvfrom(1024)
+        data = self.socket.recv(1024)
         if data:
             pk = CRTPPacket(data[0], list(data[1:(len(data)-1)]))
             self.link_keep_alive += 1

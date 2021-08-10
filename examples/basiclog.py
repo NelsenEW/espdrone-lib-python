@@ -74,7 +74,6 @@ class LoggingExample:
         self._lg_stab.add_variable('stabilizer.roll', 'float')
         self._lg_stab.add_variable('stabilizer.pitch', 'float')
         self._lg_stab.add_variable('stabilizer.yaw', 'float')
-        self._lg_stab.add_variable('pm.vbat', 'float')
 
         # Adding the configuration cannot be done until a Espdrone is
         # connected, since we need to check that the variables we
@@ -94,7 +93,7 @@ class LoggingExample:
             print('Could not add Stabilizer log config, bad configuration.')
 
         # Start a timer to disconnect in 10s
-        t = Timer(60, self._ed.close_link)
+        t = Timer(10, self._ed.close_link)
         t.start()
 
     def _stab_log_error(self, logconf, msg):

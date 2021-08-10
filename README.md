@@ -41,9 +41,9 @@ There are several examples under the `examples` directory that can be run with t
 e.g. `python examples/basiclog.py --uri 192.168.0.105`
 
 Here is the list of the working examples:
-* [basiclog.py](examples/basiclog.py) - Log the drone roll, pitch, yaw and the battery voltage asynchronously.
+* [basiclog.py](examples/basiclog.py) - Log the drone roll, pitch, yaw asynchronously.
 * [basicparam.py](examples/basicparam.py) - Get the value of each parameters inside the drone, and set the pitch derivative gain controller to a random number
 * [basiclogSync.py](examples/basiclogSync.py) - Log the drone roll, pitch yaw synchronously
 * [camera_example.py](examples/camera_example.py) - Get the camera stream from the drone and show it on an opencv window
-* [multilog.py](examples/multilog.py) - Log mutliple drones roll, pitch, yaw, and battery voltage asynchronously
+* [multilog.py](examples/multilog.py) - Log mutliple drones roll, pitch, yaw asynchronously
 * [multiramp.py](examples/multiramp.py) - Ramp multiple drones motor

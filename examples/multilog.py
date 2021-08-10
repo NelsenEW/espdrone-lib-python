@@ -43,7 +43,7 @@ logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s - %(name)s - %(l
 class LoggingExample:
     """
     Simple logging example class that logs the Stabilizer from a supplied
-    link uri and disconnects after 10s.
+    link uri and disconnects after multiple of 10s.
     """
 
     def __init__(self, link_uri, timer = 10):
@@ -75,7 +75,6 @@ class LoggingExample:
         self._lg_stab.add_variable('stabilizer.roll', 'float')
         self._lg_stab.add_variable('stabilizer.pitch', 'float')
         self._lg_stab.add_variable('stabilizer.yaw', 'float')
-        self._lg_stab.add_variable('pm.vbat', 'float')
 
         # Adding the configuration cannot be done until a Espdrone is
         # connected, since we need to check that the variables we
@@ -94,7 +93,7 @@ class LoggingExample:
         except AttributeError:
             print('Could not add Stabilizer log config, bad configuration.')
 
-        # Start a timer to disconnect in 10s
+        # Start a timer to disconnect in self.timer s
         t = Timer(self.timer, self._ed.close_link)
         t.start()
 
@@ -127,13 +126,11 @@ if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
     edlib.crtp.init_drivers(enable_debug_driver=False)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--uri",  nargs='+', help='The ip address of the drone, e.g. "192.168.0.102"', required=True)
+    parser.add_argument("--uri",  nargs='+', help='The ip addresses of the drone, e.g. "192.168.0.102 192.168.0.103"', required=True)
     args = parser.parse_args()
     multiple_le = [LoggingExample(uri, 10 * i) for i, uri in enumerate(args.uri, 1)]
     # The Espdrone lib doesn't contain anything to keep the application alive,
     # so this is where your application should do something. In our case we
     # are just waiting until all of them are disconnected
-    connected = True
-    while connected:
+    while any([le.is_connected for le in multiple_le]):
         time.sleep(1)
-        connected = any([le.is_connected for le in multiple_le])
