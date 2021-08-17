@@ -52,6 +52,8 @@ class Camera():
         self._ed = espdrone
         self.image_received_cb = Caller()
         self._stream = False
+        self._image = None
+        self._fps = None
         
     def _capture_frames(self):
         bts = b''
@@ -64,10 +66,10 @@ class Camera():
                 if jpghead>-1 and jpgend>-1:
                     jpg=bts[jpghead:jpgend+2]
                     bts=bts[jpgend+2:]
-                    image=cv2.imdecode(np.frombuffer(jpg,dtype=np.uint8),cv2.IMREAD_UNCHANGED)
-                    fps = 1 / (time.time() - start_time)
+                    self._image=cv2.imdecode(np.frombuffer(jpg,dtype=np.uint8),cv2.IMREAD_UNCHANGED)
+                    self._fps = 1 / (time.time() - start_time)
                     if self._stream:
-                        self.image_received_cb.call(image, fps)
+                        self.image_received_cb.call(self._image, self._fps)
                     
 
             except Exception as e:
@@ -97,10 +99,13 @@ class Camera():
             self._file_stream.close()
             self._stream = False
             self._thread.join()
-    
-    def __enter__(self):
-        self.start()
-        return self
+            
+    @property
+    def image(self):
+        if self._is_streaming():
+            return self._image
+        return None
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.stop()
+    @property
+    def fps(self):
+        return self._fps

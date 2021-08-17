@@ -108,7 +108,7 @@ logger = logging.getLogger(__name__)
 
 class LogVariable():
     """A logging variable"""
-    logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level = logging.ERROR,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     TOC_TYPE = 0
     MEM_TYPE = 1
 

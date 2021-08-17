@@ -52,7 +52,7 @@ __author__ = 'Bitcraze AB'
 __all__ = ['Param', 'ParamTocElement']
 
 logger = logging.getLogger(__name__)
-
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 # Possible states
 IDLE = 0
 WAIT_TOC = 1

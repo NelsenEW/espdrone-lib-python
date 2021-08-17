@@ -1,10 +1,11 @@
-Metadata-Version: 1.1
+Metadata-Version: 1.2
 Name: edlib
-Version: 0.1.8
+Version: 1.0.0
 Summary: Espdrone python driver
 Home-page: https://github.com/NelsenEW/espdrone-lib-python
 Author: Bitcraze and contributors
 Author-email: contact@bitcraze.io
+Maintainer: Nelsen, Andrian, Justin
 License: GPLv3
 Description: UNKNOWN
 Keywords: driver espdrone quadcopter
