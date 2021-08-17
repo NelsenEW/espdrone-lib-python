@@ -41,7 +41,7 @@ from edlib.espdrone.syncEspdrone import SyncEspdrone
 from edlib.espdrone.syncLogger import SyncLogger
 
 # URI to the Espdrone to connect to
-uri = 'udp://192.168.4.1'
+uri = '192.168.4.1'
 
 # The trajectory to fly
 # See https://github.com/whoenig/uav_trajectories for a tool to generate

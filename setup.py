@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='edlib',
-    version='0.1.8',
+    version='1.0.0',
     packages=find_packages(exclude=['examples', 'tests']),
 
     description='Espdrone python driver',
@@ -13,6 +13,7 @@ setup(
     author='Bitcraze and contributors',
     author_email='contact@bitcraze.io',
     license='GPLv3',
+    maintainer='Nelsen, Andrian, Justin',
 
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -24,5 +25,5 @@ setup(
 
     keywords='driver espdrone quadcopter',
 
-    install_requires=['pyusb==1.0.0b2','pip==19.3', 'opencv-python<4.3'],
+    install_requires=['pyusb==1.0.0b2', 'opencv-python<4.3'],
 )

@@ -40,7 +40,6 @@ import argparse
 import edlib.crtp  # noqa
 from edlib.espdrone import Espdrone
 import cv2
-import sys
 import time
 
 # Only output errors from the logging framework
@@ -50,11 +49,12 @@ ed = Espdrone(rw_cache='./cache')
 camera = ed.camera
 
 def show_image(image, fps):
+    global is_streaming
     cv2.imshow('unique_window_identifier', image)
     cv2.setWindowTitle("unique_window_identifier", f"fps= {fps}")
     if cv2.waitKey(1) == ord('q'):
-        ed.close_link()
-        sys.exit(1)
+        camera.image_received_cb.remove_callback(show_image)
+        is_streaming = False
 
 if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
@@ -68,7 +68,10 @@ if __name__ == '__main__':
         uri = '192.168.43.42'
 
     ed.open_link(uri)
+    ed.link.socket.settimeout(None)
+    is_streaming = True
     camera.start()
     camera.image_received_cb.add_callback(show_image)
-    while ed.link:
+    while is_streaming and ed.link:
         time.sleep(1)
+    cv2.destroyAllWindows()

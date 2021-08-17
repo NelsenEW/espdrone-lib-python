@@ -56,7 +56,7 @@ from edlib.utils.callbacks import Caller
 
 __author__ = 'Bitcraze AB'
 __all__ = ['Espdrone']
-logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level = logging.ERROR,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 

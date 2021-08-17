@@ -36,7 +36,7 @@ from edlib.espdrone import Espdrone
 from edlib.espdrone.log import LogConfig
 
 # Only output errors from the logging framework
-logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level = logging.ERROR,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
 class LoggingExample:
