@@ -40,6 +40,7 @@ import argparse
 import edlib.crtp  # noqa
 from edlib.espdrone import Espdrone
 import cv2
+import sys
 import time
 
 # Only output errors from the logging framework
@@ -74,4 +75,5 @@ if __name__ == '__main__':
     camera.image_received_cb.add_callback(show_image)
     while is_streaming and ed.link:
         time.sleep(1)
+    camera.stop()
     cv2.destroyAllWindows()

@@ -303,7 +303,7 @@ class Espdrone():
             self._answer_patterns[longest_match].cancel()
             del self._answer_patterns[longest_match]
 
-    def send_packet(self, pk, expected_reply=(), resend=False, timeout=0.2):
+    def send_packet(self, pk, expected_reply=(), resend=False, timeout=0.1):
         """
         Send a packet through the link interface.
 

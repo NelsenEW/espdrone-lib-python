@@ -33,11 +33,9 @@ Subsystem handling camera-related data communication
 
 from edlib.utils.callbacks import Caller
 
-import gc
 import time
 import numpy as np
 import cv2
-from urllib.request import urlopen
 import threading
 
 class Camera():
@@ -54,30 +52,16 @@ class Camera():
         self._stream = False
         self._image = None
         self._fps = None
-        
-    def _capture_frames(self):
-        bts = b''
-        while self._stream and self._ed.link:
-            try:
-                start_time = time.time()
-                bts+= self._file_stream.read(self.CAMERA_BUFFER_SIZE)
-                jpghead=bts.find(b'\xff\xd8')
-                jpgend=bts.find(b'\xff\xd9')
-                if jpghead>-1 and jpgend>-1:
-                    jpg=bts[jpghead:jpgend+2]
-                    bts=bts[jpgend+2:]
-                    self._image=cv2.imdecode(np.frombuffer(jpg,dtype=np.uint8),cv2.IMREAD_UNCHANGED)
-                    self._fps = 1 / (time.time() - start_time)
-                    if self._stream:
-                        self.image_received_cb.call(self._image, self._fps)
-                    
 
-            except Exception as e:
-                print("Error:" + str(e))
-                bts=b''
-                self._file_stream = urlopen(self._url)
-                continue
-        self._file_stream.close()
+    def _capture_frames(self):
+        self._cap = cv2.VideoCapture(self._url)
+        while self._stream and self._ed.link:
+            start_time = time.time()
+            ret, self._image = self._cap.read()
+            self._fps = 1 / (time.time() - start_time)
+            if self._stream and ret:
+                self.image_received_cb.call(self._image, self._fps)
+        self._cap.release()
         self._stream = False
 
     def _is_streaming(self):
@@ -86,7 +70,6 @@ class Camera():
     def start(self):
         try:
             self._url = 'http://' + self._ed.link_uri + "/stream.jpg"
-            self._file_stream = urlopen(self._url)
             if not self._is_streaming():
                 self._stream = True
                 self._thread = threading.Thread(target=self._capture_frames, daemon=True)
@@ -96,7 +79,6 @@ class Camera():
 
     def stop(self):
         if hasattr(self, '_thread'):
-            self._file_stream.close()
             self._stream = False
             self._thread.join()
             
@@ -108,4 +90,6 @@ class Camera():
 
     @property
     def fps(self):
-        return self._fps
+        if self._is_streaming():
+            return self._fps
+        return -1

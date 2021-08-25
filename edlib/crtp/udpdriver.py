@@ -123,6 +123,7 @@ class UdpDriver(CRTPDriver):
         data = ''.join(chr(v) for v in raw )
         if self.connected:
             self.socket.sendto(data.encode('latin'), self.addr)
+            self._thread.link_keep_alive = 0
 
     def pause(self):
         self._thread.stop()
@@ -162,7 +163,7 @@ class _UdpDriverThread(threading.Thread):
     Udp link receiver thread used to read data from the
     Udp driver. """
 
-    KEEP_ALIVE_MAX_COUNT = 10
+    KEEP_ALIVE_MAX_COUNT = 20
 
     def __init__(self, socket: socket, addr, in_queue: Queue,
                  link_quality_callback, link_error_callback):
@@ -178,8 +179,10 @@ class _UdpDriverThread(threading.Thread):
         self.link_keep_alive = 0 #keep alive when no input device
         # Add this to the server clients list
         self._socket.sendto(self._keep_alive_bytearray,self._addr)
-        self._socket.settimeout(3)
+        self._socket.settimeout(5)
+        self._timeout_counter = 0
         self.daemon = True
+        
 
     def stop(self):
         """ Stop the thread """
@@ -189,8 +192,7 @@ class _UdpDriverThread(threading.Thread):
         try:
             self.join()
         except Exception as e:
-            import traceback
-            print(e, traceback.format_exc())
+            pass
     
     def run(self):
         """ Run the receiver thread """
