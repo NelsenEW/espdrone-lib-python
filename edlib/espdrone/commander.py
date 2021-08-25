@@ -84,7 +84,7 @@ class Commander():
 
     def send_stop_setpoint(self):
         """
-        Send STOP setpoing, stopping the motors and (potentially) falling.
+        Send STOP setpoint, stopping the motors and (potentially) falling.
         """
         pk = CRTPPacket()
         pk.port = CRTPPort.COMMANDER_GENERIC
@@ -107,7 +107,7 @@ class Commander():
     def send_zdistance_setpoint(self, roll, pitch, yawrate, zdistance):
         """
         Control mode where the height is send as an absolute setpoint (intended
-        to be the distance to the surface under the Crazflie).
+        to be the distance to the surface under the Espdrone).
 
         Roll, pitch, yawrate are defined as degrees, degrees, degrees/s
         """
@@ -120,7 +120,7 @@ class Commander():
     def send_hover_setpoint(self, vx, vy, yawrate, zdistance):
         """
         Control mode where the height is send as an absolute setpoint (intended
-        to be the distance to the surface under the Crazflie).
+        to be the distance to the surface under the Espdrone).
 
         vx and vy are in m/s
         yawrate is in degrees/s

@@ -110,7 +110,7 @@ class PlatformService():
         if pk.channel == LINKSERVICE_SOURCE:
             # If the sink contains a magic string, get the protocol version,
             # otherwise -1
-            if pk.data[:18].decode('utf8') == 'Bitcraze Espdrone':
+            if pk.data[:18].decode('utf8').rstrip('\0') == 'Edlab Espdrone':
                 pk = CRTPPacket()
                 pk.set_header(CRTPPort.PLATFORM, VERSION_COMMAND)
                 pk.data = (VERSION_GET_PROTOCOL, )
