@@ -4,11 +4,12 @@ from setuptools import setup
 
 setup(
     name='edlib',
-    version='1.0.0',
+    version='1.1.0',
     packages=find_packages(exclude=['examples', 'tests']),
 
     description='Espdrone python driver',
     url='https://github.com/NelsenEW/espdrone-lib-python',
+    scripts=['tools/scripts/espdrone_scan'],
 
     author='Bitcraze and contributors',
     author_email='contact@bitcraze.io',

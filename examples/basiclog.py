@@ -130,7 +130,13 @@ if __name__ == '__main__':
     if args.uri:
         le = LoggingExample(args.uri)
     else:
-        le = LoggingExample('192.168.43.42')
+        available = edlib.crtp.scan_interfaces()
+        print('Espdrones found:')
+        if available:
+            print(available[0])
+            le = LoggingExample(available[0][0])
+        else:
+            quit()
    
     # The Espdrone lib doesn't contain anything to keep the application alive,
     # so this is where your application should do something. In our case we

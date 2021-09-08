@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+
+import edlib.crtp
+
+if __name__ == '__main__':
+    edlib.crtp.init_drivers(enable_debug_driver=False)
+    print(edlib.crtp.scan_interfaces())

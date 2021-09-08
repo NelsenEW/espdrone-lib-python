@@ -69,3 +69,5 @@ test/support/asyncCallbackCaller.py
 test/utils/__init__.py
 test/utils/test_callbacks.py
 test/utils/test_multiranger.py
+tools/scripts
+tools/scripts/espdrone_scan

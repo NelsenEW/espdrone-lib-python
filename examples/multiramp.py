@@ -110,15 +110,22 @@ if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
     edlib.crtp.init_drivers(enable_debug_driver=False)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--uri",  nargs='+', help='The ip addresses of the drone, e.g. "192.168.0.102 192.168.0.103"', required=True)
+    parser.add_argument("--uri",  nargs='+', help='The ip addresses of the drone, e.g. "192.168.0.102 192.168.0.103"')
     args = parser.parse_args()
-    multiple_le = [MotorRampExample(uri) for uri in args.uri]
-
+    if args.uri:
+        multiple_mr = [MotorRampExample(uri) for uri in args.uri]
+    else:
+        available = edlib.crtp.scan_interfaces()
+        print('Espdrones found:')
+        multiple_mr = list()
+        if available:
+            print(available[0])
+            multiple_mr = [MotorRampExample(uri) for uri in available[0]]
     # The Espdrone lib doesn't contain anything to keep the application alive,
     # so this is where your application should do something. In our case we
     # are just waiting until all of them are disconnected
     connected = True
 
     # Connect the two espdrones and ramps them up-down
-    while(any([le.connected for le in multiple_le])):
+    while(any([le.connected for le in multiple_mr])):
         time.sleep(0.1)

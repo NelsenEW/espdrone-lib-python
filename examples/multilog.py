@@ -126,9 +126,17 @@ if __name__ == '__main__':
     # Initialize the low-level drivers (don't list the debug drivers)
     edlib.crtp.init_drivers(enable_debug_driver=False)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--uri",  nargs='+', help='The ip addresses of the drone, e.g. "192.168.0.102 192.168.0.103"', required=True)
+    parser.add_argument("--uri",  nargs='+', help='The ip addresses of the drone, e.g. "192.168.0.102 192.168.0.103"')
     args = parser.parse_args()
-    multiple_le = [LoggingExample(uri, 10 * i) for i, uri in enumerate(args.uri, 1)]
+    if args.uri:
+        multiple_le = [LoggingExample(uri, 10 * i) for i, uri in enumerate(args.uri, 1)]
+    else:
+        available = edlib.crtp.scan_interfaces()
+        print('Espdrones found:')
+        multiple_le = list()
+        if available:
+            print(available[0])
+            multiple_le = [LoggingExample(uri, 10 * i) for i, uri in enumerate(available[0], 1)]
     # The Espdrone lib doesn't contain anything to keep the application alive,
     # so this is where your application should do something. In our case we
     # are just waiting until all of them are disconnected

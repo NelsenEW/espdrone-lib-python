@@ -52,7 +52,13 @@ if __name__ == '__main__':
     if args.uri:
         uri = args.uri
     else:
-        uri = '192.168.43.42'
+        available = edlib.crtp.scan_interfaces()
+        print('Espdrones found:')
+        if available:
+            print(available[0])
+            uri = available[0][0]
+        else:
+            quit()
    
     lg_stab = LogConfig(name='Stabilizer', period_in_ms=10)
     lg_stab.add_variable('stabilizer.roll', 'float')

@@ -28,7 +28,7 @@
 Example scipts that allows a user to see images from the camera of the drone
 
 This examples uses camera feature of the drone to stream images
-The demo is ended by either pressing Ctrl-C
+The demo is ended by either pressing Ctrl-C by pressing Q on the GUI
 
 For the example to run the following hardware is needed:
  * ESP Drone - NH
@@ -53,6 +53,7 @@ def show_image(image, fps):
     global is_streaming
     cv2.imshow('unique_window_identifier', image)
     cv2.setWindowTitle("unique_window_identifier", f"fps= {fps}")
+    # Press Q to Quit
     if cv2.waitKey(1) == ord('q'):
         camera.image_received_cb.remove_callback(show_image)
         is_streaming = False
@@ -67,6 +68,13 @@ if __name__ == '__main__':
         uri = args.uri
     else: 
         uri = '192.168.43.42'
+        available = edlib.crtp.scan_interfaces()
+        print('Espdrones found:')
+        if available:
+            print(available[0])
+            uri = available[0][0]
+        else:
+            quit()
 
     ed.open_link(uri)
     ed.link.socket.settimeout(None)

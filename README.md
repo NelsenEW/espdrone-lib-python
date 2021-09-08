@@ -36,9 +36,11 @@ create an environment, activate it and install dependencies.
 ## Examples
 There are several examples under the `examples` directory that can be run with the following command:
 
-`python[3] path/to/example_file.py --uri [YOUR DRONE's IP]` 
+`python[3] path/to/example_file.py [--uri ip]` 
 
 e.g. `python examples/basiclog.py --uri 192.168.0.105`
+
+*Note: If the optional argument [--uri] is not used, the computer will search for available drone(s) and select the lowest IP*
 
 Here is the list of the working examples:
 * [basiclog.py](examples/basiclog.py) - Log the drone roll, pitch, yaw asynchronously.
