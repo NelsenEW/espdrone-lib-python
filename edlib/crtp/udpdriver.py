@@ -34,12 +34,9 @@ import sys
 import socket
 import threading
 import time
-
-from ipaddress import IPv4Address
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
 import requests
-from requests.exceptions import ConnectTimeout
 from .crtpdriver import CRTPDriver
 from .crtpstack import CRTPPacket
 from .exceptions import WrongUriType
@@ -53,7 +50,8 @@ __author__ = "Bitcraze AB"
 __all__ = ["UdpDriver"]
 
 DEFAULT_ADDR = "192.168.43.42"
-
+urllib3_logger = logging.getLogger('urllib3')
+urllib3_logger.setLevel(logging.CRITICAL)
 logger = logging.getLogger(__name__)
 
 
@@ -167,7 +165,7 @@ class UdpDriver(CRTPDriver):
     @staticmethod
     def ip_scan(ip: str, addresses: list):
             try:
-                if not "Connection" in requests.head("http://" + ip  + "/stream.jpg", timeout=0.5).headers:
+                if requests.get("http://" + ip  + "/stream.jpg", timeout=0.5, stream=True).headers['Content-Type'] == "multipart/x-mixed-replace;boundary=123456789000000000000987654321":
                     addresses.append(ip)
             except requests.ConnectTimeout:
                 pass
